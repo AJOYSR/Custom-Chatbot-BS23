@@ -1,5 +1,4 @@
 import { model, Schema } from "mongoose";
-import { PERMISSIONS, ROLE } from "src/common/entities/enum.entity";
 import { UserInterface } from "./user.entity";
 
 const UserSchema = new Schema<UserInterface>(
@@ -8,25 +7,19 @@ const UserSchema = new Schema<UserInterface>(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
     password: {
       type: String,
       required: true,
     },
-    role: {
-      type: String,
-      enum: Object.values(ROLE),
-      required: true,
-    },
-    permissions: [
-      {
-        type: String,
-        enum: Object.values(PERMISSIONS),
-      },
-    ],
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   {

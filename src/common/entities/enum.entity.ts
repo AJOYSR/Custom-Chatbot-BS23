@@ -3,8 +3,19 @@ export enum ROLE {
   ADMIN = "admin",
 }
 
+export enum BOT_STATUS {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}
+
+export enum SENDER_TYPE {
+  USER = "user",
+  BOT = "bot",
+  HUMAN = "human",
+}
+
 export enum PERMISSIONS {
-  // Admin Management Permissions
+  // Admin Management Permissions for super-admin
   CREATE_ADMIN = "create-admin",
   VIEW_ADMIN_LIST = "view-admin-list",
   UPDATE_ADMIN_STATUS = "update-admin-status",

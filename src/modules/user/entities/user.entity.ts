@@ -1,12 +1,13 @@
 import { PERMISSIONS, ROLE } from "src/common/entities/enum.entity";
-import { Document } from "mongoose";
 
-export interface UserInterface extends Document {
+export interface UserInterface {
+  _id?: string;
   email: string;
   password: string;
   role: ROLE;
   permissions: PERMISSIONS[];
   isActive: boolean;
+  isEmailVerified: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -1,16 +1,14 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { BotController } from "./bot.controller";
-import { BotService } from "./bot.service";
+import { BotSchema } from "./entities/bot.model";
 import { BotRepository } from "./bot.repository";
-import { BotModel, BotSchema } from "./entities/bot.model";
+import { BotService } from "./bot.service";
+import { APIResponse } from "src/internal/api-response/api-response.service";
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: BotModel.name, schema: BotSchema }]),
-  ],
+  imports: [MongooseModule.forFeature([{ name: "Bot", schema: BotSchema }])],
   controllers: [BotController],
-  providers: [BotService, BotRepository],
-  exports: [BotService],
+  providers: [BotService, BotRepository, APIResponse],
 })
 export class BotModule {}

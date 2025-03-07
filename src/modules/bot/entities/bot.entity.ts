@@ -1,7 +1,7 @@
-import { Document } from "mongoose";
-export interface BotInterface extends Document {
-  _id: string;
+export interface BotInterface {
+  _id?: string;
   name: string;
+  description?: string;
   color: string;
   icon?: string;
   logo?: string;

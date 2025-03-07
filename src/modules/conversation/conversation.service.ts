@@ -1,6 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ConversationRepository } from "./conversation.repository";
-import { ConversationInterface } from "./entities/conversation.entity";
+import {
+  ConversationResponseDto,
+  CreateConversationDto,
+  GetConversationListResponseDto,
+} from "./dto/conversation.dto";
 
 @Injectable()
 export class ConversationService {
@@ -9,31 +13,51 @@ export class ConversationService {
   ) {}
 
   async create(
-    conversationData: Partial<ConversationInterface>
-  ): Promise<ConversationInterface> {
-    return this.conversationRepository.create(conversationData);
+    createConversationDto: CreateConversationDto
+  ): Promise<ConversationResponseDto> {
+    try {
+      const conversation = await this.conversationRepository.create(
+        createConversationDto
+      );
+      return { data: conversation };
+    } catch (error) {
+      throw new Error("Error creating conversation");
+    }
   }
 
-  async findById(id: string): Promise<ConversationInterface | null> {
-    return this.conversationRepository.findById(id);
+  // Get a conversation by ID
+  async getConversationById(id: string): Promise<ConversationResponseDto> {
+    try {
+      const conversation = await this.conversationRepository.findById(id);
+      if (!conversation) {
+        throw new NotFoundException(`Conversation with ID ${id} not found`);
+      }
+      return { data: conversation };
+    } catch (error) {
+      throw new Error("Error fetching conversation");
+    }
   }
 
-  async findByBotId(botId: string): Promise<ConversationInterface[]> {
-    return this.conversationRepository.findByBotId(botId);
-  }
+  // Get a list of conversations with pagination
+  async getConversations(
+    page: number,
+    limit: number
+  ): Promise<GetConversationListResponseDto> {
+    try {
+      const conversations = await this.conversationRepository.findAll(
+        page,
+        limit
+      );
+      const total = await this.conversationRepository.countConversations();
 
-  async findByUserId(userId: string): Promise<ConversationInterface[]> {
-    return this.conversationRepository.findByUserId(userId);
-  }
-
-  async update(
-    id: string,
-    conversationData: Partial<ConversationInterface>
-  ): Promise<ConversationInterface | null> {
-    return this.conversationRepository.update(id, conversationData);
-  }
-
-  async delete(id: string): Promise<ConversationInterface | null> {
-    return this.conversationRepository.delete(id);
+      return {
+        total,
+        page,
+        limit,
+        data: conversations,
+      };
+    } catch (error) {
+      throw new Error("Error fetching conversations");
+    }
   }
 }
