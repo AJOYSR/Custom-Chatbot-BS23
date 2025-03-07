@@ -1,24 +1,17 @@
 import { model, Schema } from "mongoose";
+import { BOT_STATUS, SENDER_TYPE } from "src/common/entities/enum.entity";
 import { MessageInterface } from "src/modules/message/entities/message.entity";
 
 const MessageSchema = new Schema<MessageInterface>(
   {
-    _id: {
-      type: String,
-      auto: true,
-    },
     sender: {
       type: String,
-      enum: ["user", "bot", "human"],
+      enum: Object.values(SENDER_TYPE),
       required: true,
     },
     content: {
       type: String,
       required: true,
-    },
-    timestamp: {
-      type: Date,
-      default: Date.now,
     },
   },
   {

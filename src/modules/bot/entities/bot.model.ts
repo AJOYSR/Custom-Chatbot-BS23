@@ -1,15 +1,15 @@
-import { model, Schema, Types } from "mongoose";
+import { model, Schema } from "mongoose";
 import { BotInterface } from "./bot.entity";
+import { BOT_STATUS } from "src/common/entities/enum.entity";
 
 const BotSchema = new Schema<BotInterface>(
   {
-    _id: {
-      type: String,
-      auto: true,
-    },
     name: {
       type: String,
       required: true,
+    },
+    description: {
+      type: String,
     },
     color: {
       type: String,
@@ -23,7 +23,9 @@ const BotSchema = new Schema<BotInterface>(
     },
     status: {
       type: String,
+      enum: Object.values(BOT_STATUS),
       required: true,
+      default: BOT_STATUS.ACTIVE,
     },
     welcomeMessage: {
       type: String,

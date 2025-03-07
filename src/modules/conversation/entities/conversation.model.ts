@@ -3,13 +3,9 @@ import { ConversationInterface } from "./conversation.entity";
 
 const ConversationSchema = new Schema<ConversationInterface>(
   {
-    id: {
-      type: String,
-      required: true,
-    },
     botId: {
-      type: String,
-      required: true,
+      type: Schema.Types.ObjectId,
+      ref: "bot",
     },
     userId: {
       type: String,
@@ -20,12 +16,13 @@ const ConversationSchema = new Schema<ConversationInterface>(
         ref: "message",
       },
     ],
-    startedAt: {
+    createdAt: {
       type: Date,
       default: Date.now,
     },
-    endedAt: {
+    updatedAt: {
       type: Date,
+      default: Date.now,
     },
   },
   {

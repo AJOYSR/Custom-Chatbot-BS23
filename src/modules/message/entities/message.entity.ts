@@ -1,8 +1,7 @@
-import { Document } from "mongoose";
+import { SENDER_TYPE } from "src/common/entities/enum.entity";
 
-export interface MessageInterface extends Document {
-  id: string;
-  sender: "user" | "bot" | "human";
+export interface MessageInterface {
+  _id: string;
+  sender: SENDER_TYPE;
   content: string;
-  timestamp: Date;
 }

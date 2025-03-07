@@ -1,9 +1,10 @@
+import * as dotenv from "dotenv";
+dotenv.config();
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
 import { ExcludeEmbeddingInterceptor } from "./common/pipes/exclude-embedding.pipe";
 import { SwaggerConfig } from "./internal/swagger.init";
-import * as mongoose from "mongoose";
 import { connect as connectToDatabase } from "./internal/connect-to-db";
 
 async function bootstrap() {

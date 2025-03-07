@@ -7,6 +7,8 @@ import { UserModule } from "./modules/user/user.module";
 import { MessageModule } from "./modules/message/message.module";
 import { ConversationModule } from "./modules/conversation/conversation.module";
 import { BotModule } from "./modules/bot/bot.module";
+import { dbConfig } from "./config/database";
+import { VectorsModule } from "./modules/vectors/vectors.module";
 
 @Module({
   imports: [
@@ -14,15 +16,13 @@ import { BotModule } from "./modules/bot/bot.module";
       isGlobal: true,
       envFilePath: ".env",
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRoot(dbConfig.mongodb.URI),
     DatabaseModule,
     UserModule,
     MessageModule,
     ConversationModule,
-    MessageModule,
-    ConversationModule,
     BotModule,
-    UserModule,
+    VectorsModule,
   ],
 })
 export class AppModule {}

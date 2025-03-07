@@ -1,24 +1,47 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { ConversationModel } from "./entities/conversation.model";
-import { BaseRepository } from "src/common/repositories/base.repository";
 import { ConversationInterface } from "./entities/conversation.entity";
+import { CreateConversationDto } from "./dto/conversation.dto";
+import { ConversationModel } from "./entities/conversation.model";
 
 @Injectable()
-export class ConversationRepository extends BaseRepository<ConversationInterface> {
-  constructor(
-    @InjectModel(ConversationModel.name)
-    private readonly conversationModel: Model<ConversationInterface>
-  ) {
-    super(conversationModel);
+export class ConversationRepository {
+  // Create a new conversation
+  async create(
+    createConversationDto: CreateConversationDto
+  ): Promise<ConversationInterface> {
+    try {
+      const conversation = await ConversationModel.create(
+        createConversationDto
+      );
+      return conversation?.toObject();
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
 
-  async findByBotId(botId: string): Promise<ConversationInterface[]> {
-    return this.find({ botId });
+  // Get a conversation by ID
+  async findById(id: string): Promise<ConversationInterface | null> {
+    return ConversationModel.findById(id).exec();
   }
 
-  async findByUserId(userId: string): Promise<ConversationInterface[]> {
-    return this.find({ userId });
+  // Get a list of conversations with pagination
+  async findAll(page: number, limit: number): Promise<ConversationInterface[]> {
+    const skip = (page - 1) * limit;
+    return ConversationModel.find()
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "messages",
+        select: "_id sender content",
+      })
+      .lean();
+  }
+
+  // Get the total number of conversations
+  async countConversations(): Promise<number> {
+    return ConversationModel.countDocuments().lean();
   }
 }

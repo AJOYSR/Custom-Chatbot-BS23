@@ -1,71 +1,72 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  NotFoundException,
-} from "@nestjs/common";
-import { ConversationInterface } from "./entities/conversation.entity";
+// conversation.controller.ts
+import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
+import { ApiTags, ApiResponse, ApiOperation, ApiParam } from "@nestjs/swagger";
 import { ConversationService } from "./conversation.service";
-import { ApiTags } from "@nestjs/swagger";
-@ApiTags("Conversations API List")
+import {
+  ConversationResponseDto,
+  CreateConversationDto,
+  GetConversationListResponseDto,
+} from "./dto/conversation.dto";
+
+@ApiTags("Conversations")
 @Controller("conversations")
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
   @Post()
+  @ApiOperation({ summary: "Create a new conversation" })
+  @ApiResponse({
+    status: 201,
+    description: "Conversation successfully created",
+    type: ConversationResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request - Validation Error",
+  })
   async create(
-    @Body() conversationData: Partial<ConversationInterface>
-  ): Promise<ConversationInterface> {
-    return this.conversationService.create(conversationData);
+    @Body() createConversationDto: CreateConversationDto
+  ): Promise<ConversationResponseDto> {
+    return this.conversationService.create(createConversationDto);
   }
 
   @Get(":id")
-  async findById(@Param("id") id: string): Promise<ConversationInterface> {
-    const conversation = await this.conversationService.findById(id);
-    if (!conversation) {
-      throw new NotFoundException("ConversationInterface not found");
-    }
-    return conversation;
+  @ApiOperation({ summary: "Get a conversation by ID" })
+  @ApiParam({
+    name: "id",
+    type: String,
+    description: "Unique identifier of the conversation",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "The conversation found by ID",
+    type: ConversationResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "Conversation not found",
+  })
+  async getConversationById(
+    @Param("id") id: string
+  ): Promise<ConversationResponseDto> {
+    return this.conversationService.getConversationById(id);
   }
 
-  @Get("bot/:botId")
-  async findByBotId(
-    @Param("botId") botId: string
-  ): Promise<ConversationInterface[]> {
-    return this.conversationService.findByBotId(botId);
-  }
-
-  @Get("user/:userId")
-  async findByUserId(
-    @Param("userId") userId: string
-  ): Promise<ConversationInterface[]> {
-    return this.conversationService.findByUserId(userId);
-  }
-
-  @Put(":id")
-  async update(
-    @Param("id") id: string,
-    @Body() conversationData: Partial<ConversationInterface>
-  ): Promise<ConversationInterface> {
-    const conversation = await this.conversationService.update(
-      id,
-      conversationData
-    );
-    if (!conversation) {
-      throw new NotFoundException("ConversationInterface not found");
-    }
-    return conversation;
-  }
-
-  @Delete(":id")
-  async delete(@Param("id") id: string): Promise<void> {
-    const conversation = await this.conversationService.delete(id);
-    if (!conversation) {
-      throw new NotFoundException("ConversationInterface not found");
-    }
+  @Get()
+  @ApiOperation({ summary: "Get a list of conversations with pagination" })
+  @ApiResponse({
+    status: 200,
+    description: "A list of conversations",
+    type: GetConversationListResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Bad Request - Invalid pagination parameters",
+  })
+  async getConversations(
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10
+  ): Promise<GetConversationListResponseDto> {
+    return this.conversationService.getConversations(page, limit);
   }
 }

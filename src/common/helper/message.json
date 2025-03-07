@@ -1,0 +1,83 @@
+{
+  "auth": {
+    "errors": {
+      "emailAlreadyExists": "Email already exists",
+      "invalidRoleId": "Invalid role ID",
+      "signupError": "Failed to sign up",
+      "invalidCredentials": "Invalid Credentials",
+      "invalidToken": "Verification Failed or Invalid Token",
+      "invalidEmail": "Invalid Email Address",
+      "forgotPasswordError": "Failed to forgot your password",
+      "resetPasswordError": "Failed to reset your password"
+    },
+    "success": {
+      "signupSuccessful": "Successfully registered your account",
+      "verificationSuccessful": "Successfully verified your email address",
+      "passwordResetSuccessful": "Successfully reset your password. Please log in using your new password.",
+      "passwordChangedSuccessful": "Password changed successfully",
+      "sendEmail": "Successfully send your email. Please check your email address"
+    }
+  },
+  "common": {
+    "errors": {
+      "somethingWentWrong": "Something went wrong"
+    }
+  },
+  "unauthorized": {
+    "errors": {
+      "accountInactive": "Your account is inactive. Please contact our administrator",
+      "invalidUser": "Sorry! You are not a valid user for this action",
+      "actionRestricted": "Sorry! This action is restricted"
+    }
+  },
+  "user": {
+    "errors": {
+      "couldNotGetUser": "Failed to get user information",
+      "couldNotDeleteUser": "Failed to Delete this user",
+      "emailAlreadyExists": "Email already exists",
+      "invalidRoleId": "Invalid role ID",
+      "forbiddenPermission": "You have not enough permissions to do this action",
+      "couldNotCreateUser": "Failed to create user",
+      "invalidUserId": "Invalid user ID",
+      "currentPasswordIsInvalid": "Current password is incorrect",
+      "failedToChangePassword": "Failed to change password",
+      "invalidCode": "Verification Failed or Invalid Code",
+      "failedToChangeEmail": "Failed to change email request",
+      "couldNotUpdateUser": "Failed to update user information"
+    },
+    "success": {
+      "emailChangedSuccessful": "Email changed successfully"
+    }
+  },
+  "gunRange": {
+    "errors": {
+      "couldNotCreateGunRange": "Failed to create a gun range",
+      "couldNotUpdateGunRange": "Failed to update a gun range",
+      "couldNotDeleteGunRange": "Failed to Delete a gun range",
+      "invalidGunRangeId": "Invalid gun range ID",
+      "alreadyHaveAdmin": "Already have an admin for this gun range",
+      "alreadyAssigned": "The gun range assignee is already assigned to another gun range",
+      "provideGunRangeId": "Provide a valid gun range ID"
+    }
+  },
+  "lane": {
+    "errors": {
+      "couldNotCreateLane": "Failed to create a lane",
+      "duplicateLaneNumber": "Lane number exists for the range",
+      "couldNotUpdateLane": "Failed to update a lane",
+      "invalidLaneId": "Invalid lane ID",
+      "provideLaneId": "Provide a valid lane ID"
+    }
+  },
+  "media": {
+    "errors": {
+      "failedToUpload": "Failed to upload file",
+      "invalidFileType": "Invalid file type",
+      "noFileFound": "No media found"
+    },
+    "success": {
+      "transferredMedia": "The media were successfully transferred",
+      "deletedMedia": "Successfully deleted {count} files"
+    }
+  }
+}

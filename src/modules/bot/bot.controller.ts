@@ -4,49 +4,66 @@ import {
   Post,
   Put,
   Delete,
-  Body,
   Param,
-  NotFoundException,
+  Body,
+  Query,
+  HttpCode,
+  HttpStatus,
 } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { BotService } from "./bot.service";
-import { BotInterface } from "./entities/bot.entity";
-import { ApiTags } from "@nestjs/swagger";
-@ApiTags("Bots API List")
+import {
+  BotResponseDto,
+  CreateBotDto,
+  GetBotListResponseDto,
+  UpdateBotDto,
+} from "./dto/bot.dto";
+
+@ApiTags("Bots")
 @Controller("bots")
 export class BotController {
   constructor(private readonly botService: BotService) {}
 
   @Post()
-  async create(@Body() botData: Partial<BotInterface>): Promise<BotInterface> {
-    return this.botService.create(botData);
+  @ApiOperation({ summary: "Create a new bot" })
+  @ApiResponse({ status: HttpStatus.CREATED, type: BotResponseDto })
+  async createBot(@Body() createBotDto: CreateBotDto) {
+    const bot = await this.botService.createBot(createBotDto);
+    return { data: bot };
   }
 
   @Get(":id")
-  async findById(@Param("id") id: string): Promise<BotInterface> {
-    const bot = await this.botService.findById(id);
-    if (!bot) {
-      throw new NotFoundException("BotInterface not found");
-    }
-    return bot;
+  @ApiOperation({ summary: "Get bot by ID" })
+  @ApiResponse({ status: HttpStatus.OK, type: BotResponseDto })
+  async getBotById(@Param("id") id: string) {
+    const bot = await this.botService.getBotById(id);
+    return { data: bot };
+  }
+
+  @Get()
+  @ApiOperation({ summary: "Get all bots with pagination" })
+  @ApiResponse({ status: HttpStatus.OK, type: GetBotListResponseDto })
+  async getAllBots(@Query("page") page = 1, @Query("limit") limit = 10) {
+    const { total, bots } = await this.botService.getAllBots(
+      Number(page),
+      Number(limit)
+    );
+    return { total, page, limit, data: bots };
   }
 
   @Put(":id")
-  async update(
-    @Param("id") id: string,
-    @Body() botData: Partial<BotInterface>
-  ): Promise<BotInterface> {
-    const bot = await this.botService.update(id, botData);
-    if (!bot) {
-      throw new NotFoundException("BotInterface not found");
-    }
-    return bot;
+  @ApiOperation({ summary: "Update bot by ID" })
+  @ApiResponse({ status: HttpStatus.OK, type: BotResponseDto })
+  async updateBot(@Param("id") id: string, @Body() updateBotDto: UpdateBotDto) {
+    const bot = await this.botService.updateBot(id, updateBotDto);
+    return { data: bot };
   }
 
   @Delete(":id")
-  async delete(@Param("id") id: string): Promise<void> {
-    const bot = await this.botService.delete(id);
-    if (!bot) {
-      throw new NotFoundException("BotInterface not found");
-    }
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Delete bot by ID" })
+  async deleteBot(@Param("id") id: string) {
+    const res = await this.botService.deleteBot(id);
+    return res;
   }
 }

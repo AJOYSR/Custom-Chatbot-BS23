@@ -1,11 +1,10 @@
 import { MessageInterface } from "src/modules/message/entities/message.entity";
-import { Document } from "mongoose";
 
-export interface ConversationInterface extends Document {
-  id: string;
-  botId: string;
+export interface ConversationInterface {
+  _id?: string;
+  botId: any; // normally objectId
   userId?: string;
   messages: MessageInterface[];
-  startedAt: Date;
-  endedAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
