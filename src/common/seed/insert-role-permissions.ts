@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { dbConfig } from "../../config/database/index";
-import { PERMISSIONS } from "../entities/enum.entity";
+import { PERMISSIONS } from "../../entities/enum.entity";
 
 const client = new MongoClient(dbConfig.mongodb.URI);
 
@@ -16,7 +16,7 @@ export const up = async (db: Db): Promise<void> => {
       },
       {
         _id: new ObjectId("65e990138dc8b15a12a49c6d"),
-        name: "admin",
+        name: "customer",
       },
     ];
 
@@ -159,30 +159,30 @@ export const up = async (db: Db): Promise<void> => {
         permissionId: new ObjectId("65f7f59e71d785b823d8b6ec"), // DELETE_BOT
       },
 
-      // Admin (65e990138dc8b15a12a49c6d) permissions
+      // Customer (65e990138dc8b15a12a49c6d) permissions
       {
         _id: new ObjectId("67cabf30fdd9b88d2aba1517"),
-        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // admin
+        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // customer
         permissionId: new ObjectId("65eaf4ef2df9a772d0ca238f"), // VIEW_USER_PROFILE
       },
       {
         _id: new ObjectId("67cabf358009bf35bba3ab67"),
-        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // admin
+        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // customer
         permissionId: new ObjectId("65eaf5012df9a772d0ca2391"), // VIEW_CONVERSATION_LIST
       },
       {
         _id: new ObjectId("67cabf3aa03036ceafbb96ca"),
-        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // admin
+        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // customer
         permissionId: new ObjectId("65eaf5092df9a772d0ca2392"), // VIEW_CONVERSATION_DETAIL
       },
       {
         _id: new ObjectId("67cabf41a4f36967746a4978"),
-        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // admin
+        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // customer
         permissionId: new ObjectId("65f0419002cf86afc4cb5c72"), // VIEW_BOT_LIST
       },
       {
         _id: new ObjectId("67cabf46af806e5836bd9385"),
-        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // admin
+        roleId: new ObjectId("65e990138dc8b15a12a49c6d"), // customer
         permissionId: new ObjectId("65f1804d400e079ad7a3ff19"), // VIEW_BOT
       },
     ];

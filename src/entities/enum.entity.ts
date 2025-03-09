@@ -1,6 +1,6 @@
 export enum ROLE {
   SUPER_ADMIN = "super-admin",
-  ADMIN = "admin",
+  ADMIN = "customer",
 }
 
 export enum BOT_STATUS {
@@ -13,6 +13,16 @@ export enum SENDER_TYPE {
   BOT = "bot",
   HUMAN = "human",
 }
+export enum UNPROCESSED_MESSAGE_STATUS {
+  PENDING = "pending",
+  SKIPPED = "skipped",
+  RESOLVED = "resolved",
+}
+
+export enum QUERY_USER_TYPE {
+  USER = "user",
+  BOT = "bot",
+}
 
 export enum PERMISSIONS {
   // Admin Management Permissions for super-admin
@@ -21,7 +31,7 @@ export enum PERMISSIONS {
   UPDATE_ADMIN_STATUS = "update-admin-status",
   DELETE_ADMIN = "delete-admin",
 
-  // User Profile Management Permissions (Admin perspective)
+  // User Profile Management Permissions (Customer perspective)
   VIEW_USER_PROFILE = "view-user-profile",
   UPDATE_USER_PRICE_PLAN = "update-user-price-plan",
 

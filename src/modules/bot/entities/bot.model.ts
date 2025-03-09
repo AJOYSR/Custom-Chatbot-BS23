@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 import { BotInterface } from "./bot.entity";
-import { BOT_STATUS } from "src/common/entities/enum.entity";
+import { BOT_STATUS } from "src/entities/enum.entity";
 
 const BotSchema = new Schema<BotInterface>(
   {

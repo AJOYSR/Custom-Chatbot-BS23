@@ -1,8 +1,8 @@
 // conversation.dto.ts
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, IsOptional, IsArray, IsNotEmpty } from "class-validator";
-import { MessageInterface } from "src/modules/message/entities/message.entity";
 import { ConversationInterface } from "../entities/conversation.entity";
+import { Message } from "src/entities/message.entity";
 
 export class ConversationDto implements Partial<ConversationInterface> {
   @ApiProperty({
@@ -22,7 +22,7 @@ export class ConversationDto implements Partial<ConversationInterface> {
   @ApiProperty({
     description: "Array of messages associated with the conversation",
   })
-  messages: MessageInterface[];
+  messages: Message[];
 
   @ApiProperty({
     description: "The timestamp when the conversation was created",
@@ -55,7 +55,7 @@ export class CreateConversationDto implements Partial<ConversationInterface> {
   })
   @IsArray({ message: "Messages must be an array" })
   @IsNotEmpty({ message: "Messages are required" })
-  messages: MessageInterface[];
+  messages: Message[];
 }
 
 export class ConversationResponseDto {

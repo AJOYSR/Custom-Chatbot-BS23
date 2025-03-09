@@ -12,7 +12,7 @@ import {
   IsEnum,
 } from "class-validator";
 import { BotInterface } from "./../entities/bot.entity";
-import { BOT_STATUS } from "src/common/entities/enum.entity";
+import { BOT_STATUS } from "src/entities/enum.entity";
 
 export class BotDto {
   @ApiProperty({ description: "Unique identifier for the bot" })

@@ -1,10 +1,10 @@
-import { PERMISSIONS, ROLE } from "src/common/entities/enum.entity";
+import { PERMISSIONS } from "src/entities/enum.entity";
 
 export interface UserInterface {
   _id?: string;
   email: string;
   password: string;
-  role: ROLE;
+  role: any;
   permissions: PERMISSIONS[];
   isActive: boolean;
   isEmailVerified: boolean;
