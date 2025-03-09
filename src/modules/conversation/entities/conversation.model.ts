@@ -1,29 +1,28 @@
 import { model, Schema } from "mongoose";
 import { ConversationInterface } from "./conversation.entity";
+import { QUERY_USER_TYPE } from "src/entities/enum.entity";
 
 const ConversationSchema = new Schema<ConversationInterface>(
   {
     botId: {
       type: Schema.Types.ObjectId,
       ref: "bot",
+      required: true,
     },
-    userId: {
-      type: String,
-    },
+
     messages: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "message",
+        role: {
+          type: String,
+          enum: QUERY_USER_TYPE,
+          required: true,
+        },
+        content: {
+          type: String,
+          required: true,
+        },
       },
     ],
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-    updatedAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     timestamps: true,

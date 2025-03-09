@@ -1,7 +1,7 @@
 {
   "auth": {
     "errors": {
-      "emailAlreadyExists": "Email already exists",
+      "emailAlreadyExists": "Email already exists!",
       "invalidRoleId": "Invalid role ID",
       "signupError": "Failed to sign up",
       "invalidCredentials": "Invalid Credentials",

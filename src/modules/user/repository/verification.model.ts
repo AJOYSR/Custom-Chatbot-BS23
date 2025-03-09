@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { Verification } from "src/common/entities/auth.entity";
+import { Verification } from "src/entities/auth.entity";
 
 const VerificationSchema = new Schema<Verification>(
   {

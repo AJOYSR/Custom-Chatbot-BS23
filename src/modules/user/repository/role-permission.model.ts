@@ -1,10 +1,10 @@
 import { model, Schema } from "mongoose";
-import { PERMISSIONS, ROLE } from "src/common/entities/enum.entity";
+import { PERMISSIONS, ROLE } from "src/entities/enum.entity";
 import {
   Permission,
   Role,
   RolePermission,
-} from "src/common/entities/role-permission.entity";
+} from "src/entities/role-permission.entity";
 
 const PermissionSchema = new Schema<Permission>(
   {
