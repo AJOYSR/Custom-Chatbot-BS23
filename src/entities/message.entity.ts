@@ -1,4 +1,4 @@
-import { QUERY_USER_TYPE } from "./enum.entity";
+import { QUERY_USER_TYPE } from './enum.entity';
 
 export interface Message {
   role: QUERY_USER_TYPE;

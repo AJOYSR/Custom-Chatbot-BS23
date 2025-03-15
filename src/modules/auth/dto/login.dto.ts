@@ -1,23 +1,17 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsString,
-  IsNotEmpty,
-  IsEmail,
-  IsOptional,
-  IsBoolean,
-} from "class-validator";
-import { TokenResponseDto } from "./common.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { TokenResponseDto } from './common.dto';
 
 export class SignInDto {
   @ApiProperty()
-  @IsNotEmpty({ message: "validation.notEmpty" })
-  @IsString({ message: "validation.isString" })
-  @IsEmail({}, { message: "validation.isEmail" })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsString({ message: 'validation.isString' })
+  @IsEmail({}, { message: 'validation.isEmail' })
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty({ message: "validation.notEmpty" })
-  @IsString({ message: "validation.isString" })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsString({ message: 'validation.isString' })
   password: string;
 }
 

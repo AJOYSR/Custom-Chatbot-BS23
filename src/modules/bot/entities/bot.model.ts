@@ -1,6 +1,6 @@
-import { model, Schema } from "mongoose";
-import { BotInterface } from "./bot.entity";
-import { BOT_STATUS } from "src/entities/enum.entity";
+import { model, Schema } from 'mongoose';
+import { BotInterface } from './bot.entity';
+import { BOT_STATUS } from 'src/entities/enum.entity';
 
 const BotSchema = new Schema<BotInterface>(
   {
@@ -40,16 +40,16 @@ const BotSchema = new Schema<BotInterface>(
       type: Boolean,
       default: false,
     },
-    systemPrompt: {
+    handOverToHumanMessage: {
       type: String,
     },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
-const BotModel = model<BotInterface>("bot", BotSchema);
+const BotModel = model<BotInterface>('bot', BotSchema);
 
 export { BotModel, BotSchema };

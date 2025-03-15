@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
-import axios from "axios";
+import { Injectable, Logger } from '@nestjs/common';
+import axios from 'axios';
 
 // Define an interface for the Ollama embeddings response
 interface OllamaEmbeddingsResponse {
@@ -10,8 +10,8 @@ interface OllamaEmbeddingsResponse {
 @Injectable()
 export class AIResponseService {
   private readonly logger = new Logger(AIResponseService.name);
-  private readonly ollamaEndpoint = "http://localhost:11434";
-  private readonly model = "nomic-embed-text:latest";
+  private readonly ollamaEndpoint = 'http://localhost:11434';
+  private readonly model = 'nomic-embed-text:latest';
 
   constructor() {}
 
@@ -27,21 +27,21 @@ export class AIResponseService {
         {
           model: this.model,
           prompt: text,
-        }
+        },
       );
 
       if (!response.data || !response.data.embedding) {
-        throw new Error("No embedding returned from Ollama");
+        throw new Error('No embedding returned from Ollama');
       }
 
       return response.data.embedding;
     } catch (error) {
       this.logger.error(
-        `Error generating embeddings: ${error instanceof Error ? error.message : "Unknown error"}`,
-        error instanceof Error ? error.stack : undefined
+        `Error generating embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error instanceof Error ? error.stack : undefined,
       );
       throw new Error(
-        `Failed to generate embeddings: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Failed to generate embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -54,18 +54,18 @@ export class AIResponseService {
    */
   async generateCombinedEmbeddings(
     question: string,
-    answer: string
+    answer: string,
   ): Promise<number[]> {
     try {
       const combinedText = `Question: ${question}\nAnswer: ${answer}`;
       return await this.generateEmbeddings(combinedText);
     } catch (error) {
       this.logger.error(
-        `Error generating combined embeddings: ${error instanceof Error ? error.message : "Unknown error"}`,
-        error instanceof Error ? error.stack : undefined
+        `Error generating combined embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error instanceof Error ? error.stack : undefined,
       );
       throw new Error(
-        `Failed to generate combined embeddings: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Failed to generate combined embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -80,7 +80,7 @@ export class AIResponseService {
       return true;
     } catch (error) {
       this.logger.error(
-        `Ollama service check failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Ollama service check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       return false;
     }

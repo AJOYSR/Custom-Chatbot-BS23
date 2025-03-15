@@ -1,13 +1,13 @@
-import { Injectable } from "@nestjs/common";
-import { UserInterface } from "./entities/user.entity";
-import { UserModel } from "./entities/user.model";
-import { Verification } from "src/entities/auth.entity";
-import { VerificationModel } from "./repository/verification.model";
+import { Injectable } from '@nestjs/common';
+import { UserInterface } from './entities/user.entity';
+import { UserModel } from './entities/user.model';
+import { Verification } from 'src/entities/auth.entity';
+import { VerificationModel } from './repository/verification.model';
 import {
   RoleModel,
   RolePermissionModel,
-} from "./repository/role-permission.model";
-import { Role } from "src/entities/role-permission.entity";
+} from './repository/role-permission.model';
+import { Role } from 'src/entities/role-permission.entity';
 @Injectable()
 export class UserRepository {
   /**
@@ -16,7 +16,7 @@ export class UserRepository {
    * @returns A newly created user object with sensitive information like password removed, or null if an error occurs.
    */
   async createUser(
-    data: Partial<UserInterface>
+    data: Partial<UserInterface>,
   ): Promise<UserInterface | null> {
     try {
       const createdUser = await UserModel.create(data);
@@ -39,14 +39,14 @@ export class UserRepository {
    */
   async getAllUsers(
     query: Record<string, any>,
-    pagination: { skip: number; limit: number }
+    pagination: { skip: number; limit: number },
   ): Promise<UserInterface[] | null> {
     try {
       // Fetch user roles based on the original query
 
       // Find users matching the modified query
       const users = await UserModel.find(query)
-        .select("-password -isDelete -createdAt -updatedAt")
+        .select('-password -isDelete -createdAt -updatedAt')
         .sort({ createdAt: -1 })
         .skip(pagination.skip)
         .limit(pagination.limit)
@@ -54,14 +54,14 @@ export class UserRepository {
 
       return users;
     } catch (err) {
-      console.error("🚀 ~ UserRepository ~ Error:", err);
+      console.error('🚀 ~ UserRepository ~ Error:', err);
       return [];
     }
   }
 
   private buildUserQuery(
     originalQuery: Record<string, any>,
-    userWithRoleId?: any[]
+    userWithRoleId?: any[],
   ): Record<string, any> {
     if (userWithRoleId.length === 0) return {};
 
@@ -107,7 +107,7 @@ export class UserRepository {
         {
           new: true,
           upsert: true,
-        }
+        },
       ).lean();
     } catch (err) {
       console.log(err);
@@ -121,7 +121,7 @@ export class UserRepository {
    * @returns The verification data object or null if not found or an error occurs.
    */
   async findVerificationData(
-    query: Record<string, any>
+    query: Record<string, any>,
   ): Promise<Verification | null> {
     try {
       return VerificationModel.findOne(query).lean();
@@ -137,7 +137,7 @@ export class UserRepository {
    * @returns The deleted verification data object or null if not found or an error occurs.
    */
   async deleteVerificationData(
-    query: Record<string, any>
+    query: Record<string, any>,
   ): Promise<Verification | null> {
     try {
       return VerificationModel.findOneAndDelete(query).lean();
@@ -154,7 +154,7 @@ export class UserRepository {
    */
   async findUser(query: Record<string, any>): Promise<UserInterface | null> {
     try {
-      return await UserModel.findOne(query).select("-password").lean();
+      return await UserModel.findOne(query).select('-password').lean();
     } catch (error: any) {
       console.log(error);
       return null;
@@ -169,7 +169,7 @@ export class UserRepository {
   async findUserById(id: string): Promise<UserInterface | null> {
     try {
       const fetchedUser = await UserModel.findById(id)
-        .select("-password -isDelete -createdAt -updatedAt")
+        .select('-password -isDelete -createdAt -updatedAt')
         .lean();
 
       return fetchedUser;
@@ -187,16 +187,16 @@ export class UserRepository {
   async getPermissionsArray(query: Record<string, any>): Promise<any> {
     try {
       const permissions = await RolePermissionModel.find(query)
-        .select("-roleId -_id")
+        .select('-roleId -_id')
         .populate({
-          path: "permissionId",
-          select: "name _id",
+          path: 'permissionId',
+          select: 'name _id',
         })
         .lean();
 
       // Flatten the result array using map
       const flattenedPermissions = permissions.map(
-        (permission: any) => permission?.permissionId?.name
+        (permission: any) => permission?.permissionId?.name,
       );
       return flattenedPermissions;
     } catch (error: any) {
@@ -253,7 +253,7 @@ export class UserRepository {
    * @returns The user object with sensitive information like password or null if not found or an error occurs.
    */
   async getUserPassword(
-    query: Record<string, string>
+    query: Record<string, string>,
   ): Promise<UserInterface | null> {
     try {
       return await UserModel.findOne(query);
@@ -271,13 +271,13 @@ export class UserRepository {
    */
   async updateUser(
     query: Record<string, string>,
-    data: Partial<UserInterface>
+    data: Partial<UserInterface>,
   ): Promise<UserInterface | null> {
     try {
       return await UserModel.findOneAndUpdate(query, data, {
         new: true,
       })
-        .select("-password -isDelete -createdAt -updatedAt")
+        .select('-password -isDelete -createdAt -updatedAt')
         .lean();
     } catch (error: any) {
       console.log(error);

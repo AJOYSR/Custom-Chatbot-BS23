@@ -1,13 +1,13 @@
-import { model, Schema } from "mongoose";
-import { UnresolvedQueryInterface } from "./unresolved-message.entity";
-import { UNPROCESSED_MESSAGE_STATUS } from "src/entities/enum.entity";
+import { model, Schema } from 'mongoose';
+import { UnresolvedQueryInterface } from './unresolved-message.entity';
+import { UNPROCESSED_MESSAGE_STATUS } from 'src/entities/enum.entity';
 
 const UnresolvedQuerySchema = new Schema<UnresolvedQueryInterface>(
   {
     botId: {
       type: String,
       required: true,
-      ref: "conversation",
+      ref: 'conversation',
     },
 
     conversationId: {
@@ -30,12 +30,12 @@ const UnresolvedQuerySchema = new Schema<UnresolvedQueryInterface>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const UnresolvedQueryModel = model<UnresolvedQueryInterface>(
-  "unresolved-query",
-  UnresolvedQuerySchema
+  'unresolved-query',
+  UnresolvedQuerySchema,
 );
 
 export { UnresolvedQueryModel, UnresolvedQuerySchema };

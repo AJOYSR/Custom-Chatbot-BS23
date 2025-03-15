@@ -3,10 +3,10 @@ import {
   ArgumentsHost,
   ExceptionFilter,
   HttpStatus,
-} from "@nestjs/common";
-import { Response } from "express";
-import { I18nContext, I18nService } from "nestjs-i18n";
-import { CommonErrorMessages } from "../../entities/messages.entity";
+} from '@nestjs/common';
+import { Response } from 'express';
+import { I18nContext, I18nService } from 'nestjs-i18n';
+import { CommonErrorMessages } from 'src/entities/messages.entity';
 
 // Define an interface to represent the structure of the exception object
 export interface IException {
@@ -41,13 +41,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     // Translate the error message if it's a string
     const translate =
-      typeof message === "string" &&
+      typeof message === 'string' &&
       this.i18n.translate(message, {
         lang: I18nContext.current()?.lang,
       });
 
     // Translate each error message in case it's an object
-    typeof exception?.response?.message === "object" &&
+    typeof exception?.response?.message === 'object' &&
       Object.keys(exception?.response?.message).forEach((key) => {
         if (key) {
           const translatedMessage = this.i18n.translate(
@@ -55,7 +55,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
             {
               lang: I18nContext.current().lang,
               args: { property: key },
-            }
+            },
           );
           message[key] = translatedMessage;
         }

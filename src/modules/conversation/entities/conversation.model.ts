@@ -1,12 +1,12 @@
-import { model, Schema } from "mongoose";
-import { ConversationInterface } from "./conversation.entity";
-import { QUERY_USER_TYPE } from "src/entities/enum.entity";
+import { model, Schema } from 'mongoose';
+import { ConversationInterface } from './conversation.entity';
+import { QUERY_USER_TYPE } from 'src/entities/enum.entity';
 
 const ConversationSchema = new Schema<ConversationInterface>(
   {
     botId: {
       type: Schema.Types.ObjectId,
-      ref: "bot",
+      ref: 'bot',
       required: true,
     },
 
@@ -21,18 +21,22 @@ const ConversationSchema = new Schema<ConversationInterface>(
           type: String,
           required: true,
         },
+        timestamp: {
+          type: Date,
+          required: true,
+        },
       },
     ],
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const ConversationModel = model<ConversationInterface>(
-  "conversation",
-  ConversationSchema
+  'conversation',
+  ConversationSchema,
 );
 
 export { ConversationModel, ConversationSchema };

@@ -1,4 +1,4 @@
-import { UNPROCESSED_MESSAGE_STATUS } from "src/entities/enum.entity";
+import { UNPROCESSED_MESSAGE_STATUS } from 'src/entities/enum.entity';
 
 export interface UnresolvedQueryInterface {
   id?: string;

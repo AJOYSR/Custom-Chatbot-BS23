@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateUnresolvedQueryDto,
   GetUnresolvedQueryListResponseDto,
   UnresolvedQueryResponseDto,
-} from "./dto/unsolved-message.dto";
-import { UnresolvedQueryRepository } from "./unresolved-message.repository";
-import { UNPROCESSED_MESSAGE_STATUS } from "src/entities/enum.entity";
+} from './dto/unsolved-message.dto';
+import { UnresolvedQueryRepository } from './unresolved-message.repository';
+import { UNPROCESSED_MESSAGE_STATUS } from 'src/entities/enum.entity';
 
 @Injectable()
 export class UnresolvedQueryService {
@@ -13,10 +13,10 @@ export class UnresolvedQueryService {
 
   // Create an unresolved query
   async create(
-    createUnresolvedQueryDto: CreateUnresolvedQueryDto
+    createUnresolvedQueryDto: CreateUnresolvedQueryDto,
   ): Promise<UnresolvedQueryResponseDto> {
     const query = await this.unresolvedQueryRep.create(
-      createUnresolvedQueryDto
+      createUnresolvedQueryDto,
     );
     return { data: query };
   }
@@ -33,7 +33,7 @@ export class UnresolvedQueryService {
   // Get a list of unresolved queries with pagination
   async getAll(
     page: number,
-    limit: number
+    limit: number,
   ): Promise<GetUnresolvedQueryListResponseDto> {
     const { total, data } = await this.unresolvedQueryRep.findAll(page, limit);
     return { total, page, limit, data };
@@ -42,7 +42,7 @@ export class UnresolvedQueryService {
   // Update the status of an unresolved query
   async updateStatus(
     id: string,
-    status: UNPROCESSED_MESSAGE_STATUS
+    status: UNPROCESSED_MESSAGE_STATUS,
   ): Promise<UnresolvedQueryResponseDto> {
     const updatedQuery = await this.unresolvedQueryRep.updateStatus(id, status);
     if (!updatedQuery) {
