@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { GetCountFunction, GetDataFunction } from "./types";
-import { PaginationInterface } from "src/interface/common";
+import { Injectable } from '@nestjs/common';
+import { GetCountFunction, GetDataFunction } from './types';
+import { PaginationInterface } from 'src/interface/common';
 
 @Injectable()
 export class PaginationService {
@@ -19,7 +19,7 @@ export class PaginationService {
     getDataFn: GetDataFunction<T>,
     getCountFn: GetCountFunction,
     query: Record<string, any>,
-    pagination: PaginationInterface
+    pagination: PaginationInterface,
   ): Promise<{ data: T[]; page: number; limit: number; total: number }> {
     const { page, limit } = this.handlePaginationParams(pagination);
 

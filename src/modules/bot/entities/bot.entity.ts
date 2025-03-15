@@ -10,7 +10,7 @@ export interface BotInterface {
   fallbackMessage?: string;
   suggestionMessage?: string;
   handoverToHuman?: boolean;
-  systemPrompt?: string;
+  handOverToHumanMessage?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

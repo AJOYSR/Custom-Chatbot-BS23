@@ -1,8 +1,8 @@
-import { INestApplication } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { swaggerConfig } from "src/config/swagger";
+import { INestApplication } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { swaggerConfig } from 'src/config/swagger';
 
-type SecuritySchemeType = "apiKey" | "http" | "oauth2" | "openIdConnect";
+type SecuritySchemeType = 'apiKey' | 'http' | 'oauth2' | 'openIdConnect';
 
 export const SwaggerConfig = (app: INestApplication) => {
   const config = new DocumentBuilder()

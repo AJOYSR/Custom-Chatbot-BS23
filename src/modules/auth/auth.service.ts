@@ -6,18 +6,20 @@ import * as ejs from 'ejs';
 import { JwtService } from '@nestjs/jwt';
 import { APIResponse } from 'src/internal/api-response/api-response.service';
 
-import {
-  AuthErrorMessages,
-  AuthSuccessMessages,
-  UnauthorizedErrorMessages,
-} from 'src/entities/messages.entity';
-import { MailService } from 'src/helper/email';
 import { randomUUID } from 'crypto';
 import { UserRepository } from '../user/user.repository';
 import { UserInterface } from '../user/entities/user.entity';
 import { coreConfig } from 'src/config/core';
 import { authConfig } from 'src/config/auth';
 import { AdminLoginResponseData, JwtPayload } from 'src/entities/auth.entity';
+import { MailService } from 'src/helper/email';
+import {
+  AuthErrorMessages,
+  AuthSuccessMessages,
+  UnauthorizedErrorMessages,
+} from 'src/entities/messages.entity';
+import { ROLE } from 'src/entities/enum.entity';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -41,9 +43,16 @@ export class AuthService {
   }> {
     try {
       const { email } = data;
-      const [doesUserExist] = await Promise.all([
+      const [doesUserExist, getCustomerRole] = await Promise.all([
         await this.userRepo.findUser({ email }),
+        await this.userRepo.findRole({
+          name: ROLE.CUSTOMER,
+        }),
       ]);
+      console.log(
+        '🚀 ~ AuthService ~ signup ~ getCustomerRole:',
+        getCustomerRole,
+      );
 
       if (doesUserExist) {
         throw new Error(AuthErrorMessages.EMAIL_ALREADY_EXISTS);
@@ -53,6 +62,7 @@ export class AuthService {
       data.password = await bcrypt.hash(data.password, authConfig.salt);
       const user = await this.userRepo.createUser({
         ...data,
+        role: getCustomerRole?._id,
       });
 
       if (!user) throw new Error(AuthErrorMessages.SIGNUP_ERROR);

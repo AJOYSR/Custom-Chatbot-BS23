@@ -1,5 +1,5 @@
-import { model, Schema } from "mongoose";
-import { UserInterface } from "./user.entity";
+import { model, Schema } from 'mongoose';
+import { UserInterface } from './user.entity';
 
 const UserSchema = new Schema<UserInterface>(
   {
@@ -17,6 +17,10 @@ const UserSchema = new Schema<UserInterface>(
       type: Boolean,
       default: true,
     },
+    role: {
+      type: Schema.Types.ObjectId,
+      ref: 'role',
+    },
     isEmailVerified: {
       type: Boolean,
       default: false,
@@ -25,9 +29,9 @@ const UserSchema = new Schema<UserInterface>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
-const UserModel = model<UserInterface>("user", UserSchema);
+const UserModel = model<UserInterface>('user', UserSchema);
 
 export { UserModel, UserSchema };

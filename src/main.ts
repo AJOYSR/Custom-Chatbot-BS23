@@ -1,13 +1,13 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
-import { ExcludeEmbeddingInterceptor } from "./common/pipes/exclude-embedding.pipe";
-import { SwaggerConfig } from "./internal/swagger.init";
-import { connect as connectToDatabase } from "./internal/connect-to-db";
-import { I18nService } from "nestjs-i18n";
-import { AllExceptionsFilter } from "./common/exception/all-exception-filter";
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import { ExcludeEmbeddingInterceptor } from './common/pipes/exclude-embedding.pipe';
+import { SwaggerConfig } from './internal/swagger.init';
+import { connect as connectToDatabase } from './internal/connect-to-db';
+import { I18nService } from 'nestjs-i18n';
+import { AllExceptionsFilter } from './internal/exception/all-exception-filter';
 
 async function bootstrap() {
   // Connect to the database
@@ -21,7 +21,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-    })
+    }),
   );
 
   // Global interceptor to exclude embedding field
@@ -34,6 +34,9 @@ async function bootstrap() {
   const i18nService =
     app.get<I18nService<Record<string, unknown>>>(I18nService);
   app.useGlobalFilters(new AllExceptionsFilter(i18nService));
+
+  // Use global validation pipe
+  app.useGlobalPipes(new ValidationPipe());
 
   const port = process.env.PORT || 4040;
   await app.listen(port);

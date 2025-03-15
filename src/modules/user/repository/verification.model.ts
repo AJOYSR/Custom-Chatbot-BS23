@@ -1,5 +1,5 @@
-import { model, Schema } from "mongoose";
-import { Verification } from "src/entities/auth.entity";
+import { model, Schema } from 'mongoose';
+import { Verification } from 'src/entities/auth.entity';
 
 const VerificationSchema = new Schema<Verification>(
   {
@@ -13,11 +13,11 @@ const VerificationSchema = new Schema<Verification>(
   {
     timestamps: false,
     versionKey: false,
-  }
+  },
 );
 
 const VerificationModel = model<Verification>(
-  "verification",
-  VerificationSchema
+  'verification',
+  VerificationSchema,
 );
 export { VerificationModel, VerificationSchema };

@@ -1,72 +1,95 @@
 // conversation.controller.ts
-import { Controller, Get, Post, Param, Query, Body } from "@nestjs/common";
-import { ApiTags, ApiResponse, ApiOperation, ApiParam } from "@nestjs/swagger";
-import { ConversationService } from "./conversation.service";
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Query,
+  Body,
+  UseGuards,
+  Patch,
+  ValidationPipe,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
+import { ConversationService } from './conversation.service';
 import {
   ConversationResponseDto,
   CreateConversationDto,
+  GetAllConversationQueryDto,
   GetConversationListResponseDto,
-} from "./dto/conversation.dto";
+  UpdateConversationDto,
+} from './dto/conversation.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth-guard';
+import { coreConfig } from 'src/config/core';
+import { PERMISSIONS } from 'src/entities/enum.entity';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { PermissionRequired } from 'src/decorators/permission.decorator';
 
-@ApiTags("Conversations")
-@Controller("conversations")
+@ApiTags('Conversations')
+@Controller('conversations')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
   @Post()
-  @ApiOperation({ summary: "Create a new conversation" })
+  @ApiOperation({ summary: 'Create a new conversation' })
   @ApiResponse({
     status: 201,
-    description: "Conversation successfully created",
+    description: 'Conversation successfully created',
     type: ConversationResponseDto,
   })
-  @ApiResponse({
-    status: 400,
-    description: "Bad Request - Validation Error",
-  })
   async create(
-    @Body() createConversationDto: CreateConversationDto
-  ): Promise<ConversationResponseDto> {
+    @Body(new ValidationPipe({ whitelist: true }))
+    createConversationDto: CreateConversationDto,
+  ): Promise<any> {
     return this.conversationService.create(createConversationDto);
   }
 
-  @Get(":id")
-  @ApiOperation({ summary: "Get a conversation by ID" })
-  @ApiParam({
-    name: "id",
-    type: String,
-    description: "Unique identifier of the conversation",
-  })
-  @ApiResponse({
-    status: 200,
-    description: "The conversation found by ID",
-    type: ConversationResponseDto,
-  })
-  @ApiResponse({
-    status: 404,
-    description: "Conversation not found",
-  })
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a conversation by ID' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @PermissionRequired(PERMISSIONS.VIEW_CONVERSATION_DETAIL)
+  @ApiBearerAuth()
   async getConversationById(
-    @Param("id") id: string
+    @Param('id') id: string,
   ): Promise<ConversationResponseDto> {
     return this.conversationService.getConversationById(id);
   }
 
   @Get()
-  @ApiOperation({ summary: "Get a list of conversations with pagination" })
+  @ApiOperation({ summary: 'Get a list of conversations with pagination' })
   @ApiResponse({
     status: 200,
-    description: "A list of conversations",
+    description: 'A list of conversations',
     type: GetConversationListResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: "Bad Request - Invalid pagination parameters",
+    description: 'Bad Request - Invalid pagination parameters',
   })
   async getConversations(
-    @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10
+    @Query() query: GetAllConversationQueryDto,
   ): Promise<GetConversationListResponseDto> {
-    return this.conversationService.getConversations(page, limit);
+    const { page = 1, limit = coreConfig.paginationLimit, ...rest } = query;
+    return await this.conversationService.getConversations(rest, {
+      page,
+      limit,
+    });
+  }
+  @Patch(':id')
+  @ApiOperation({ summary: 'Get a conversation by ID' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @PermissionRequired(PERMISSIONS.VIEW_CONVERSATION_DETAIL)
+  @ApiBearerAuth()
+  async UpdateConversation(
+    @Param('id') id: string,
+    @Body(new ValidationPipe({ whitelist: true }))
+    data: UpdateConversationDto,
+  ): Promise<ConversationResponseDto> {
+    return this.conversationService.updateConversation(id, data);
   }
 }

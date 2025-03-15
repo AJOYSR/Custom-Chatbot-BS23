@@ -3,9 +3,9 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-} from "@nestjs/common";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ExcludeEmbeddingInterceptor implements NestInterceptor {
@@ -14,7 +14,7 @@ export class ExcludeEmbeddingInterceptor implements NestInterceptor {
       return data.map((item) => this.excludeEmbedding(item));
     }
 
-    if (data && typeof data === "object") {
+    if (data && typeof data === 'object') {
       if (data.data) {
         // Handle paginated response
         return {
@@ -28,7 +28,7 @@ export class ExcludeEmbeddingInterceptor implements NestInterceptor {
         // Handle batch responses
         return {
           ...rest,
-          vectors: this.excludeEmbedding(data.vectors),
+          vectors: this.excludeEmbedding(data.embeddings ?? embedding),
         };
       }
       return rest;

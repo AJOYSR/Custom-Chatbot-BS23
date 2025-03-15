@@ -49,23 +49,26 @@
       "emailChangedSuccessful": "Email changed successfully"
     }
   },
-  "gunRange": {
+  "bot": {
     "errors": {
-      "couldNotCreateGunRange": "Failed to create a gun range",
-      "couldNotUpdateGunRange": "Failed to update a gun range",
-      "couldNotDeleteGunRange": "Failed to Delete a gun range",
-      "invalidGunRangeId": "Invalid gun range ID",
-      "alreadyHaveAdmin": "Already have an admin for this gun range",
-      "alreadyAssigned": "The gun range assignee is already assigned to another gun range",
-      "provideGunRangeId": "Provide a valid gun range ID"
+      "invalidBotId": "Invalid bot ID",
+      "couldNotUpdateBot": "Failed to update the Bot",
+      "couldNotDeleteBot": "Failed to Delete a the Bot",
+      "invalidGunRangeId": "Invalid the Bot ID",
+      "alreadyHaveAdmin": "Already have an admin for this the Bot",
+      "alreadyAssigned": "The the Bot assignee is already assigned to another the Bot",
+      "provideGunRangeId": "Provide a valid the Bot ID"
+    },
+    "success": {
+      "botCreationSuccessful": "Bot created successfully"
     }
   },
-  "lane": {
+  "conversation": {
     "errors": {
       "couldNotCreateLane": "Failed to create a lane",
       "duplicateLaneNumber": "Lane number exists for the range",
       "couldNotUpdateLane": "Failed to update a lane",
-      "invalidLaneId": "Invalid lane ID",
+      "invalidConversationId": "Invalid Conversation ID",
       "provideLaneId": "Provide a valid lane ID"
     }
   },

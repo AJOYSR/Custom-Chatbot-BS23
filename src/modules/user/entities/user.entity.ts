@@ -1,4 +1,4 @@
-import { PERMISSIONS } from "src/entities/enum.entity";
+import { PERMISSIONS } from 'src/entities/enum.entity';
 
 export interface UserInterface {
   _id?: string;

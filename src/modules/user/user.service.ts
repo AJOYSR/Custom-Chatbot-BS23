@@ -1,24 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import * as bcrypt from "bcrypt";
-import * as fs from "fs";
-import * as ejs from "ejs";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import * as fs from 'fs';
+import * as ejs from 'ejs';
 import {
   APIResponse,
   IResponse,
-} from "src/internal/api-response/api-response.service";
-import { UserRepository } from "./user.repository";
-import { PaginationService } from "../pagination/pagination.service";
-import { JwtPayload } from "src/entities/auth.entity";
-import { UserInterface } from "./entities/user.entity";
-import { UserErrorMessages } from "src/entities/messages.entity";
-import { CreateUserRequest } from "src/entities/user.entity";
-import { ROLE } from "src/entities/enum.entity";
-import { generateStrongPassword } from "src/helper/utils";
-import { authConfig } from "src/config/auth";
-import { Role } from "src/entities/role-permission.entity";
-import { MailService } from "src/helper/email";
-import { PaginationQueryDto } from "../pagination/types";
+} from 'src/internal/api-response/api-response.service';
+import { UserRepository } from './user.repository';
+import { PaginationService } from '../pagination/pagination.service';
+import { JwtPayload } from 'src/entities/auth.entity';
+import { UserInterface } from './entities/user.entity';
+import { UserErrorMessages } from 'src/entities/messages.entity';
+import { CreateUserRequest } from 'src/entities/user.entity';
+import { ROLE } from 'src/entities/enum.entity';
+import { generateStrongPassword } from 'src/helper/utils';
+import { authConfig } from 'src/config/auth';
+import { Role } from 'src/entities/role-permission.entity';
+import { MailService } from 'src/helper/email';
+import { PaginationQueryDto } from '../pagination/types';
 
 @Injectable()
 export class UserService {
@@ -26,7 +26,7 @@ export class UserService {
     private readonly userRepo: UserRepository,
     private readonly mailService: MailService,
     private readonly response: APIResponse,
-    private readonly pagination: PaginationService
+    private readonly pagination: PaginationService,
   ) {}
 
   /**
@@ -38,7 +38,7 @@ export class UserService {
    */
   async addUser(
     userInfo: JwtPayload,
-    data: CreateUserRequest
+    data: CreateUserRequest,
   ): Promise<IResponse<UserInterface>> {
     try {
       const { email, roleId } = data;
@@ -61,7 +61,7 @@ export class UserService {
       // hash the random password
       const hashedPassword = await bcrypt.hash(
         temporaryPassword,
-        authConfig.salt
+        authConfig.salt,
       );
 
       // Create the user
@@ -82,20 +82,20 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message || UserErrorMessages.COULD_NOT_CREATE_USER },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
   private sendTemporaryPasswordEmail(
     email: string,
-    temporaryPassword: string
+    temporaryPassword: string,
   ): void {
     this.sendEmail({
       email,
-      templatePath: "dist/src/helper/email/templates/temporary-password.html",
+      templatePath: 'dist/src/helper/email/templates/temporary-password.html',
       renderValue: { temporaryPassword },
-      subject: "Your Authentication Details",
+      subject: 'Your Authentication Details',
     });
   }
 
@@ -111,7 +111,7 @@ export class UserService {
     pagination: PaginationQueryDto,
     user: JwtPayload,
     roleIdsQuery: any,
-    rest = {}
+    rest = {},
   ) {
     // Generate the search query based on the provided condition
     const query = this.generateSearchQuery(condition);
@@ -125,7 +125,7 @@ export class UserService {
         ...rest,
         roleId: roleIdsQuery,
       },
-      pagination
+      pagination,
     );
 
     const users: UserInterface[] = [];
@@ -146,7 +146,7 @@ export class UserService {
   async getUserInfo(
     userInfo: JwtPayload,
     userId: string,
-    gunRangeId?: string
+    gunRangeId?: string,
   ): Promise<IResponse<UserInterface>> {
     try {
       // Validates the user permissions.
@@ -155,7 +155,7 @@ export class UserService {
 
       const adminRoles = roles
         .filter((role: Role) =>
-          [ROLE.ADMIN, ROLE.SUPER_ADMIN].includes(role.name)
+          [ROLE.CUSTOMER, ROLE.SUPER_ADMIN].includes(role.name),
         )
         .map((role: Role) => role._id.toString());
 
@@ -166,7 +166,7 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message || UserErrorMessages.COULD_NOT_GET_USER },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -182,7 +182,7 @@ export class UserService {
   async updateUser(
     userInfo: JwtPayload,
     data: CreateUserRequest,
-    updatedUserId: string
+    updatedUserId: string,
   ): Promise<IResponse<UserInterface>> {
     try {
       const { email, roleId } = data;
@@ -197,7 +197,7 @@ export class UserService {
 
       const updatedUser = await this.userRepo.updateUser(
         { _id: updatedUserId },
-        data
+        data,
       );
       if (!updatedUser) throw new Error();
 
@@ -205,7 +205,7 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message || UserErrorMessages.COULD_NOT_UPDATE_USER },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -220,8 +220,8 @@ export class UserService {
     const { q } = condition;
     const query: Record<string, any> = {};
 
-    if (q !== undefined && q !== "") {
-      query.$or = [{ name: new RegExp(q, "i") }, { email: q }];
+    if (q !== undefined && q !== '') {
+      query.$or = [{ name: new RegExp(q, 'i') }, { email: q }];
     }
     return query;
   }
@@ -238,7 +238,7 @@ export class UserService {
     userInfo: JwtPayload,
     email: string,
     roleId: string,
-    gunRangeId?: string
+    gunRangeId?: string,
   ): Promise<any> {
     try {
       const [creatorRole, user, targetRole] = await Promise.all([
@@ -257,7 +257,7 @@ export class UserService {
           {
             message: UserErrorMessages.EMAIL_ALREADY_EXISTS,
           },
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
@@ -266,7 +266,7 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -275,7 +275,7 @@ export class UserService {
     userInfo: JwtPayload,
     userId: string,
     email?: string,
-    roleId?: string
+    roleId?: string,
   ): Promise<void> {
     try {
       const [, updatedUserOldInfo, user, targetRole, creatorRole] =
@@ -287,15 +287,18 @@ export class UserService {
           this.userRepo.findRoleById(userInfo?.roleId?._id),
         ]);
 
-      if ((roleId && (!targetRole || targetRole.name === ROLE.ADMIN)) || user) {
+      if (
+        (roleId && (!targetRole || targetRole.name === ROLE.CUSTOMER)) ||
+        user
+      ) {
         throw new HttpException(
           {
             message:
-              roleId && (!targetRole || targetRole.name === ROLE.ADMIN)
+              roleId && (!targetRole || targetRole.name === ROLE.CUSTOMER)
                 ? UserErrorMessages.INVALID_ROLE_ID
                 : UserErrorMessages.EMAIL_ALREADY_EXISTS,
           },
-          HttpStatus.BAD_REQUEST
+          HttpStatus.BAD_REQUEST,
         );
       }
 
@@ -306,7 +309,7 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -321,7 +324,7 @@ export class UserService {
     if (!this.canManageUser(creatorRole, targetRole)) {
       throw new HttpException(
         { message: UserErrorMessages.FORBIDDEN_PERMISSION },
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -355,7 +358,7 @@ export class UserService {
     try {
       const { email, templatePath, subject, renderValue } = data;
       // read the template html file
-      const template = fs.readFileSync(templatePath, "utf8");
+      const template = fs.readFileSync(templatePath, 'utf8');
       const html = ejs.render(template, renderValue);
       // send the email
       await this.mailService.sendMail(email, subject, html);

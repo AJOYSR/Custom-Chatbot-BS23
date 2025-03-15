@@ -55,3 +55,13 @@ export function deepClone(obj: any): any {
 
   return clone;
 }
+
+export function generateSearchQuery(condition: { q: string }): object {
+  const { q } = condition;
+  const query: Record<string, any> = {};
+
+  if (q !== undefined && q !== '') {
+    query.name = new RegExp(q, 'i');
+  }
+  return query;
+}

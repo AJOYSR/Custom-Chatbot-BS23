@@ -12,7 +12,6 @@ import { UserRepository } from './user.repository';
 import { MailService } from 'src/helper/email';
 import { APIResponse } from 'src/internal/api-response/api-response.service';
 import { PaginationService } from '../pagination/pagination.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
