@@ -99,7 +99,6 @@ export class BotService {
     session.startTransaction();
     try {
       const validBot = await this.botRepository.findBotById(id);
-      console.log('🚀 ~ BotService ~ deleteBot ~ validBot:', validBot);
       // If the bot is not valid
       if (!validBot) {
         throw new Error(BotErrorMessages.INVALID_BOT_ID);

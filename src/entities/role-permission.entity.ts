@@ -1,5 +1,5 @@
-import { Schema } from "mongoose";
-import { PERMISSIONS, ROLE } from "./enum.entity";
+import { Schema } from 'mongoose';
+import { PERMISSIONS, ROLE } from './enum.entity';
 
 export class Role {
   _id?: string;

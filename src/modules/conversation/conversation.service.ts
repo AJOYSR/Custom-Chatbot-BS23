@@ -150,7 +150,6 @@ export class ConversationService {
       // Handle no search results case
       if (searchResults.data.length === 0) {
         const botDetails = await this.botRepo.findBotById(conversation.botId);
-        console.log('🚀 ~ ConversationService ~ botDetails:', botDetails);
         botMessage.content =
           botDetails?.fallbackMessage ??
           `Unable to answer this currently, Can you ask me another question? \n${

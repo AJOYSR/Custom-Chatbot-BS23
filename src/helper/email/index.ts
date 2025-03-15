@@ -1,7 +1,7 @@
-import { Global, Injectable } from "@nestjs/common";
+import { Global, Injectable } from '@nestjs/common';
 
-import * as sendgrid from "@sendgrid/mail";
-import { mailConfig } from "src/config/mail";
+import * as sendgrid from '@sendgrid/mail';
+import { mailConfig } from 'src/config/mail';
 sendgrid.setApiKey(mailConfig.apiKey);
 
 @Global()
@@ -13,12 +13,12 @@ export class MailService {
     email: string,
     subject: string,
     mailBody: string,
-    retryCount = 1
+    retryCount = 1,
   ): Promise<boolean | null> {
     try {
       const data = {
         to: email,
-        from: "hello@longshotcameras.com",
+        from: 'hello@longshotcameras.com',
         subject,
         html: mailBody,
       };
@@ -28,7 +28,7 @@ export class MailService {
       if (!res) return false;
       return true;
     } catch (error) {
-      console.log("sendMail err: ", JSON.stringify(error, null, 2));
+      console.log('sendMail err: ', JSON.stringify(error, null, 2));
 
       // Retry logic
       if (retryCount < this.maxRetries) {
@@ -43,7 +43,7 @@ export class MailService {
   async sendMail(
     email: string,
     subject: string,
-    mailBody: string
+    mailBody: string,
   ): Promise<boolean | null> {
     // Start with the first attempt (retryCount = 1)
     return await this.sendMailWithRetry(email, subject, mailBody);
