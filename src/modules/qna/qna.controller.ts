@@ -8,11 +8,17 @@ import {
   HttpStatus,
   Query,
   Put,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { QnAService } from './qna.service';
 
-import { PaginationQueryDto } from '../pagination/types';
 import {
   CreateVectorBatchDto,
   CreateVectorDto,
@@ -20,17 +26,27 @@ import {
   SearchVectorDto,
   UpdateVectorDto,
 } from './dto/qna.dto';
+import { coreConfig } from 'src/config/core';
+import { GetAllBotQueryDto } from '../bot/dto/bot.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth-guard';
+import { PERMISSIONS } from 'src/entities/enum.entity';
+import { RolesGuard } from 'src/guards/roles.guard';
+import { PermissionRequired } from 'src/decorators/permission.decorator';
 
 @ApiTags('Q&A API List')
 @Controller('qna')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class QnAController {
   constructor(private readonly qnaService: QnAService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new vector' })
-  @ApiResponse({ status: 201, description: 'Vector created successfully' })
+  @ApiOperation({ summary: 'Create a new qna' })
+  @ApiResponse({ status: 201, description: 'Qna created successfully' })
+  @PermissionRequired(PERMISSIONS.CREATE_QNA)
+  @UseGuards(RolesGuard)
   async create(@Body() createVectorDto: CreateVectorDto) {
-    return this.qnaService.create(createVectorDto);
+    return await this.qnaService.create(createVectorDto);
   }
 
   @Post('batch')
@@ -46,38 +62,65 @@ export class QnAController {
       },
     },
   })
+  @PermissionRequired(PERMISSIONS.CREATE_QNA)
+  @UseGuards(RolesGuard)
   async createBatch(@Body() createVectorBatchDto: CreateVectorBatchDto) {
     return this.qnaService.createBatch(createVectorBatchDto);
   }
+
   @Put(':id')
-  @ApiOperation({ summary: 'Update a vector' })
+  @ApiOperation({ summary: 'Update a Qna' })
   @ApiResponse({ status: 200, description: 'Vector updated successfully' })
   @ApiResponse({ status: 404, description: 'Vector not found' })
+  @PermissionRequired(PERMISSIONS.UPDATE_QNA)
+  @UseGuards(RolesGuard)
   async update(
     @Param('id') id: string,
     @Body() updateVectorDto: UpdateVectorDto,
   ) {
     return this.qnaService.update(id, updateVectorDto);
   }
+
   @Get()
-  @ApiOperation({ summary: 'Get all vectors with pagination' })
-  @ApiResponse({ status: 200, description: 'Return paginated vectors' })
-  async findAll(@Query() paginationQuery: PaginationQueryDto) {
-    return this.qnaService.findAll(paginationQuery);
+  @ApiOperation({ summary: 'Get all qna list with pagination' })
+  @ApiResponse({ status: 200, description: 'Return paginated qna' })
+  @PermissionRequired(PERMISSIONS.VIEW_QNA_LIST)
+  @UseGuards(RolesGuard)
+  async findAll(@Query() query: GetAllBotQueryDto) {
+    const { page = 1, limit = coreConfig.paginationLimit, ...rest } = query;
+    return await this.qnaService.findAll(rest, {
+      page,
+      limit,
+    });
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a vector by id' })
-  @ApiResponse({ status: 200, description: 'Return a vector by id' })
-  @ApiResponse({ status: 404, description: 'Vector not found' })
+  @ApiResponse({ status: 200, description: 'Return a qna by id' })
+  @ApiResponse({ status: 404, description: 'Qna not found' })
+  @PermissionRequired(PERMISSIONS.VIEW_QNA_DETAIL)
+  @UseGuards(RolesGuard)
   async findOne(@Param('id') id: string) {
     return this.qnaService.findOne(id);
   }
 
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a vector by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return a message of fail or success',
+  })
+  @ApiResponse({ status: 404, description: 'Qna not found' })
+  @PermissionRequired(PERMISSIONS.DELETE_QNA)
+  @UseGuards(RolesGuard)
+  async DeleteQna(@Param('id') id: string) {
+    return await this.qnaService.DeleteOne(id);
+  }
+
   @Post('search/similar')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Search similar vectors using L2 distance' })
-  @ApiResponse({ status: 200, description: 'Return similar vectors' })
+  @ApiOperation({ summary: 'Search similar Qna using L2 distance' })
+  @ApiResponse({ status: 200, description: 'Return similar Qna' })
   async searchSimilar(@Body() searchDto: SearchVectorDto) {
     return this.qnaService.searchSimilar(searchDto);
   }

@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
+import { QnaDto, UpdateVectorDto } from './dto/qna.dto';
 
 @Injectable()
 export class QnARepository {
@@ -10,7 +11,7 @@ export class QnARepository {
     answer: string,
     botId: string,
     embedding: any,
-  ) {
+  ): Promise<QnaDto> {
     const client = await this.dbService.getClient();
     try {
       const result = await client.query(
@@ -23,25 +24,52 @@ export class QnARepository {
     }
   }
 
-  async findAllVectors(skip: number, limit: number) {
+  async findAllVectors(
+    query: Record<string, any>,
+    pagination: { skip: number; limit: number },
+  ) {
     const client = await this.dbService.getClient();
     try {
-      const result = await client.query(
-        'SELECT id, question, answer, "botId", "createdAt", "updatedAt" FROM question_n_answers OFFSET $1 LIMIT $2',
-        [skip, limit],
-      );
+      const { skip, limit } = pagination;
+      const { botId } = query;
+
+      let sqlQuery =
+        'SELECT id, question, answer, "botId", "createdAt", "updatedAt" FROM question_n_answers';
+      const queryParams = [];
+
+      if (botId) {
+        sqlQuery += ' WHERE "botId" = $1';
+        queryParams.push(botId);
+      }
+
+      sqlQuery +=
+        ' OFFSET $' +
+        (queryParams.length + 1) +
+        ' LIMIT $' +
+        (queryParams.length + 2);
+      queryParams.push(skip, limit);
+
+      const result = await client.query(sqlQuery, queryParams);
       return result.rows;
     } finally {
       client.release();
     }
   }
 
-  async countVectors() {
+  async countVectors(query: Record<string, any>) {
     const client = await this.dbService.getClient();
     try {
-      const result = await client.query(
-        'SELECT COUNT(*) FROM question_n_answers',
-      );
+      const { botId } = query;
+
+      let sqlQuery = 'SELECT COUNT(*) FROM question_n_answers';
+      const queryParams = [];
+
+      if (botId) {
+        sqlQuery += ' WHERE "botId" = $1';
+        queryParams.push(botId);
+      }
+
+      const result = await client.query(sqlQuery, queryParams);
       return parseInt(result.rows[0].count);
     } finally {
       client.release();
@@ -49,6 +77,7 @@ export class QnARepository {
   }
 
   async findVectorById(id: string) {
+    console.log('🚀 ~ QnARepository ~ findVectorById ~ id:', id);
     const client = await this.dbService.getClient();
     try {
       const result = await client.query(
@@ -64,19 +93,62 @@ export class QnARepository {
     }
   }
 
-  async updateVector(id: string, updateFields: any[], updateValues: any[]) {
+  async deleteVectorById(id: string) {
     const client = await this.dbService.getClient();
     try {
-      // Add id to values array for WHERE clause
-      updateValues.push(id);
+      // If the record exists, proceed with deletion
+      const deleteResult = await client.query(
+        'DELETE FROM question_n_answers WHERE id = $1 RETURNING id, question, answer, "botId", "createdAt", "updatedAt"',
+        [id],
+      );
 
+      // Return the deleted record
+      return deleteResult.rows[0];
+    } finally {
+      client.release();
+    }
+  }
+
+  async updateVector(id: string, data: UpdateVectorDto) {
+    const client = await this.dbService.getClient();
+    try {
+      const { question, answer, embedding } = data;
+
+      // Initialize arrays to hold the fields and values to update
+      const updateFields = [];
+      const updateValues = [];
+
+      // Add fields and values to the arrays if they are provided
+      if (question !== undefined) {
+        updateFields.push('question = $' + (updateValues.length + 1));
+        updateValues.push(question);
+      }
+      if (answer !== undefined) {
+        updateFields.push('answer = $' + (updateValues.length + 1));
+        updateValues.push(answer);
+      }
+      if (embedding !== undefined) {
+        updateFields.push('embedding = $' + (updateValues.length + 1));
+        updateValues.push(embedding);
+      }
+
+      // If no fields are provided to update, throw an error
+      if (updateFields.length === 0) {
+        throw new Error('No fields provided to update');
+      }
+
+      // Construct the SQL query dynamically
       const query = `
         UPDATE question_n_answers 
         SET ${updateFields.join(', ')}
-        WHERE id = $${updateValues.length}
+        WHERE id = $${updateValues.length + 1}
         RETURNING id, question, answer, "botId", "createdAt", "updatedAt"
       `;
 
+      // Add the ID as the last parameter
+      updateValues.push(id);
+
+      // Execute the query
       const result = await client.query(query, updateValues);
       return result.rows[0];
     } finally {

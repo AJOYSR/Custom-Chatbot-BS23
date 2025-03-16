@@ -9,6 +9,7 @@ import {
   UseGuards,
   Patch,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -81,15 +82,21 @@ export class ConversationController {
     });
   }
   @Patch(':id')
-  @ApiOperation({ summary: 'Get a conversation by ID' })
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @PermissionRequired(PERMISSIONS.VIEW_CONVERSATION_DETAIL)
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update conversation by ID' })
   async UpdateConversation(
     @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true }))
     data: UpdateConversationDto,
   ): Promise<ConversationResponseDto> {
-    return this.conversationService.updateConversation(id, data);
+    return await this.conversationService.updateConversation(id, data);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Get a conversation by ID' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @PermissionRequired(PERMISSIONS.DELETE_CONVERSATION)
+  @ApiBearerAuth()
+  async deleteConversation(@Param('id') id: string): Promise<string> {
+    return await this.conversationService.deleteConversation(id);
   }
 }

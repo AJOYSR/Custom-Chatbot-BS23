@@ -66,10 +66,9 @@
   "conversation": {
     "errors": {
       "couldNotCreateLane": "Failed to create a lane",
-      "duplicateLaneNumber": "Lane number exists for the range",
-      "couldNotUpdateLane": "Failed to update a lane",
-      "invalidConversationId": "Invalid Conversation ID",
-      "provideLaneId": "Provide a valid lane ID"
+      "couldNotUpdateConversation": "Failed to update the conversation",
+      "couldNotDeleteConversation": "Failed to delete the conversation",
+      "couldNotCreateConversation": "Failed to create the conversation"
     }
   },
   "media": {
@@ -83,4 +82,21 @@
       "deletedMedia": "Successfully deleted {count} files"
     }
   }
+  ,
+  "unsolved": {
+    "errors": {
+      "invalidUnsolvedId": "Invalid Unsolved Query ID",
+      "couldNotUpdatedQuery": "Failed to update a query",
+      "couldNotDeletedQuery": "Failed to deleted the query"
+    }
+  },
+  "qna" : {
+    "errors": {
+      "invalidQnAId": "Invalid QnA ID",
+      "couldNotUpdatedQnA": "Failed to update a QnA",
+      "couldNotDeletedQnA": "Failed to deleted the QnA",
+      "couldNotCreateQnA": "Failed to create a QnA"
+    }
+  }
+
 }

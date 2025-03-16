@@ -75,19 +75,19 @@ export class CreateBotDto implements Partial<BotInterface> {
     description: 'The name of the bot',
     example: 'Customer Support Bot',
   })
-  @IsString({ message: 'Name must be a string' })
-  @IsNotEmpty({ message: 'Name is required' })
-  @MinLength(3, { message: 'Name must be at least 3 characters long' })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @MinLength(3, { message: 'validation.minLength' })
   name: string;
 
   @ApiProperty({
     description: 'The color for the bot (hex code or color name)',
     example: '#FF5733',
   })
-  @IsString({ message: 'Color must be a string' })
-  @IsNotEmpty({ message: 'Color is required' })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
   @Matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^[a-zA-Z]+$/, {
-    message: 'Color must be a valid hex code (e.g., #FF5733) or color name',
+    message: 'validation.matches',
   })
   color: string;
 
@@ -95,7 +95,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     description: 'The description of the bot',
     example: 'A bot that helps with customer support queries',
   })
-  @IsString({ message: 'Description must be a string' })
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   description?: string;
 
@@ -107,7 +107,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   icon?: string;
 
   @ApiPropertyOptional({
@@ -118,14 +118,14 @@ export class CreateBotDto implements Partial<BotInterface> {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   logo?: string;
 
   @ApiPropertyOptional({
     description: 'The system prompt for the bot',
     example: 'You are a helpful customer support assistant.',
   })
-  @IsString({ message: 'System prompt must be a string' })
+  @IsString({ message: 'validation.isString' })
   systemPrompt: string;
 
   @ApiProperty({
@@ -134,9 +134,9 @@ export class CreateBotDto implements Partial<BotInterface> {
     enum: BOT_STATUS,
   })
   @IsEnum(BOT_STATUS, {
-    message: "Status must be either 'active' or 'inactive'",
+    message: 'validation.isEnum',
   })
-  @IsNotEmpty({ message: 'Status is required' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
   status: BOT_STATUS;
 
   @ApiPropertyOptional({
@@ -144,7 +144,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     example: 'Hello! How can I assist you today?',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   welcomeMessage?: string;
 
   @ApiPropertyOptional({
@@ -152,7 +152,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     example: 'Sorry, I don’t understand that. Can you try again?',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   fallbackMessage?: string;
 
   @ApiPropertyOptional({
@@ -160,7 +160,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     example: 'Try asking something else!',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   suggestionMessage?: string;
 
   @ApiPropertyOptional({
@@ -168,7 +168,7 @@ export class CreateBotDto implements Partial<BotInterface> {
     example: false,
   })
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       const lowerValue = value.toLowerCase();
@@ -186,8 +186,8 @@ export class UpdateBotDto implements Partial<BotInterface> {
     description: 'The name of the bot',
     example: 'Customer Support Bot',
   })
-  @IsString({ message: 'Name must be a string' })
-  @MinLength(3, { message: 'Name must be at least 3 characters long' })
+  @IsString({ message: 'validation.isString' })
+  @MinLength(3, { message: 'validation.minLength' })
   @IsOptional()
   name?: string;
 
@@ -195,9 +195,9 @@ export class UpdateBotDto implements Partial<BotInterface> {
     description: 'The color for the bot (hex code or color name)',
     example: '#FF5733',
   })
-  @IsString({ message: 'Color must be a string' })
+  @IsString({ message: 'validation.isString' })
   @Matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$|^[a-zA-Z]+$/, {
-    message: 'Color must be a valid hex code (e.g., #FF5733) or color name',
+    message: 'validation.matches',
   })
   @IsOptional()
   color?: string;
@@ -206,7 +206,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     description: 'The description of the bot',
     example: 'A bot that helps with customer support queries',
   })
-  @IsString({ message: 'Description must be a string' })
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   description?: string;
 
@@ -218,7 +218,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   icon?: string;
 
   @ApiPropertyOptional({
@@ -229,14 +229,14 @@ export class UpdateBotDto implements Partial<BotInterface> {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   logo?: string;
 
   @ApiPropertyOptional({
     description: 'The system prompt for the bot',
     example: 'You are a helpful customer support assistant.',
   })
-  @IsString({ message: 'System prompt must be a string' })
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   systemPrompt?: string;
 
@@ -246,7 +246,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     enum: BOT_STATUS,
   })
   @IsEnum(BOT_STATUS, {
-    message: "Status must be either 'active' or 'inactive'",
+    message: 'validation.isEnum',
   })
   @IsOptional()
   status?: BOT_STATUS;
@@ -256,7 +256,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     example: 'Hello! How can I assist you today?',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   welcomeMessage?: string;
 
   @ApiPropertyOptional({
@@ -264,7 +264,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     example: 'Sorry, I don’t understand that. Can you try again?',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   fallbackMessage?: string;
 
   @ApiPropertyOptional({
@@ -272,7 +272,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     example: 'Try asking something else!',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   suggestionMessage?: string;
 
   @ApiPropertyOptional({
@@ -280,7 +280,7 @@ export class UpdateBotDto implements Partial<BotInterface> {
     example: false,
   })
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       const lowerValue = value.toLowerCase();
@@ -291,12 +291,14 @@ export class UpdateBotDto implements Partial<BotInterface> {
   })
   handoverToHuman?: boolean;
 }
-//Single
+
+// Single Bot Response DTO
 export class BotResponseDto {
   @ApiProperty({ type: BotDto })
   data: BotInterface;
 }
 
+// Get Bot List Response DTO
 export class GetBotListResponseDto {
   @ApiProperty()
   total: number;
@@ -311,6 +313,7 @@ export class GetBotListResponseDto {
   data: BotDto[];
 }
 
+// Get All Bot Query DTO
 export class GetAllBotQueryDto extends PaginationQueryDto {
   @ApiProperty({ required: false })
   @IsOptional()

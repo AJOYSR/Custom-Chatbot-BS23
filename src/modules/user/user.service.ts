@@ -19,6 +19,7 @@ import { authConfig } from 'src/config/auth';
 import { Role } from 'src/entities/role-permission.entity';
 import { MailService } from 'src/helper/email';
 import { PaginationQueryDto } from '../pagination/types';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -38,14 +39,14 @@ export class UserService {
    */
   async addUser(
     userInfo: JwtPayload,
-    data: CreateUserRequest,
+    data: CreateUserDto,
   ): Promise<IResponse<UserInterface>> {
     try {
-      const { email, roleId } = data;
+      const { email, role } = data;
 
       // Validate user addition and gun range (if applicable)
       const [newRoleCreated] = await Promise.all([
-        this.validateUserAddition(userInfo, email, roleId),
+        this.validateUserAddition(userInfo, email, role),
       ]);
 
       if (newRoleCreated) {
@@ -107,10 +108,9 @@ export class UserService {
    * @returns A Promise resolving to the paginated list of retail users.
    */
   async getAllUsers(
-    condition: { q: string; gunRangeId?: string },
+    condition: { q: string },
     pagination: PaginationQueryDto,
     user: JwtPayload,
-    roleIdsQuery: any,
     rest = {},
   ) {
     // Generate the search query based on the provided condition
@@ -123,7 +123,6 @@ export class UserService {
       {
         ...query,
         ...rest,
-        roleId: roleIdsQuery,
       },
       pagination,
     );
@@ -181,14 +180,14 @@ export class UserService {
    */
   async updateUser(
     userInfo: JwtPayload,
-    data: CreateUserRequest,
+    data: UpdateUserDto,
     updatedUserId: string,
   ): Promise<IResponse<UserInterface>> {
     try {
-      const { email, roleId } = data;
+      const { email, role } = data;
       // Validates the addition of a new user based on various criteria, such as existing email and user permissions.
       const [_, updatedUserOldInfo] = await Promise.all([
-        await this.validateUserRole(userInfo, updatedUserId, email, roleId),
+        await this.validateUserRole(userInfo, updatedUserId, email, role),
         await this.userRepo.findUserById(updatedUserId),
       ]);
       if (!updatedUserOldInfo) {
@@ -238,7 +237,6 @@ export class UserService {
     userInfo: JwtPayload,
     email: string,
     roleId: string,
-    gunRangeId?: string,
   ): Promise<any> {
     try {
       const [creatorRole, user, targetRole] = await Promise.all([

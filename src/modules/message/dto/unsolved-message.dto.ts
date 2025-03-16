@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
 import { UNPROCESSED_MESSAGE_STATUS } from 'src/entities/enum.entity';
 import { UnresolvedQueryInterface } from '../entities/unresolved-message.entity';
+import { PaginationQueryDto } from 'src/modules/pagination/types';
 
 // Base DTO
 export class UnresolvedQueryDto implements UnresolvedQueryInterface {
@@ -34,24 +35,24 @@ export class CreateUnresolvedQueryDto
     description: 'The bot ID associated with this query',
     example: '65f2b1e0a67c2a4f2c8b7e89',
   })
-  @IsString({ message: 'Bot ID must be a string' })
-  @IsNotEmpty({ message: 'Bot ID is required' })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
   botId: string;
 
   @ApiProperty({
     description: 'The conversation ID associated with this query',
     example: '65f2b1e0a67c2a4f2c8b7e99',
   })
-  @IsString({ message: 'Conversation ID must be a string' })
-  @IsNotEmpty({ message: 'Conversation ID is required' })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
   conversationId: string;
 
   @ApiProperty({
     description: 'The unresolved user query',
     example: 'Why is my payment not processed?',
   })
-  @IsString({ message: 'Query must be a string' })
-  @IsNotEmpty({ message: 'Query is required' })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
   query: string;
 
   @ApiProperty({
@@ -60,7 +61,7 @@ export class CreateUnresolvedQueryDto
     enum: UNPROCESSED_MESSAGE_STATUS,
   })
   @IsEnum(UNPROCESSED_MESSAGE_STATUS, {
-    message: 'Status must be a valid unresolved query status',
+    message: 'validation.isEnum',
   })
   status?: UNPROCESSED_MESSAGE_STATUS;
 }
@@ -84,4 +85,27 @@ export class GetUnresolvedQueryListResponseDto {
 
   @ApiProperty({ type: [UnresolvedQueryDto] })
   data: UnresolvedQueryDto[];
+}
+
+export class GetAllUnsolvedQueryDto extends PaginationQueryDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: 'validation.isString' })
+  q: string;
+}
+
+export class UpdateUnresolvedQueryDto
+  implements Partial<UnresolvedQueryInterface>
+{
+  @ApiProperty({
+    description: 'The status of the unresolved query',
+    example: UNPROCESSED_MESSAGE_STATUS.RESOLVED,
+    enum: UNPROCESSED_MESSAGE_STATUS,
+    required: true,
+  })
+  @IsEnum(UNPROCESSED_MESSAGE_STATUS, {
+    message: 'validation.isEnum',
+  })
+  @IsOptional()
+  status: UNPROCESSED_MESSAGE_STATUS;
 }

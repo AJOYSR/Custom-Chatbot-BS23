@@ -46,4 +46,17 @@ export enum PERMISSIONS {
   VIEW_BOT_LIST = 'view-bot-list',
   VIEW_BOT = 'view-bot',
   DELETE_BOT = 'delete-bot',
+
+  // Unresolved Query Management Permissions
+  VIEW_UNRESOLVED_QUERY_LIST = 'view-unresolved-query-list',
+  VIEW_UNRESOLVED_QUERY_DETAIL = 'view-unresolved-query-detail',
+  UPDATE_UNRESOLVED_QUERY = 'resolve-unresolved-query',
+  DELETE_UNRESOLVED_QUERY = 'delete-unresolved-query',
+
+  // Qna Management Permissions
+  CREATE_QNA = 'create-qna',
+  UPDATE_QNA = 'edit-qna',
+  VIEW_QNA_LIST = 'view-qna-list',
+  VIEW_QNA_DETAIL = 'view-qna-detail',
+  DELETE_QNA = 'delete-qna',
 }

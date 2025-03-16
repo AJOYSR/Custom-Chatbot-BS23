@@ -150,7 +150,9 @@ export class UpdateConversationDto
     required: true,
   })
   @IsObject({ message: 'validation.isObject' })
-  @ValidateNested()
+  @ValidateNested({
+    message: 'validation.isNested',
+  })
   @IsNotEmpty({ message: 'validation.notEmpty' })
   @Type(() => MessageDto)
   message: Message;

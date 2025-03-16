@@ -43,9 +43,15 @@ export class ConversationRepository {
   }
 
   // Get the total number of conversations
-  async countConversations(): Promise<number> {
-    return ConversationModel.countDocuments().lean();
+  async countConversations(query: Record<string, any>): Promise<number> {
+    try {
+      return await ConversationModel.countDocuments(query).lean();
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
   }
+
   async findRecentConversationByUser(
     conversationId: string,
     botId: string,
@@ -61,6 +67,7 @@ export class ConversationRepository {
       .sort({ updatedAt: -1 })
       .lean();
   }
+
   async addMessageToConversation(
     conversationId: string,
     message: Message,
@@ -73,5 +80,19 @@ export class ConversationRepository {
       },
       { new: true },
     ).lean();
+  }
+
+  // Delete a conversation by ID
+
+  async deleteConversationById(
+    query: any,
+    options?: { session?: any },
+  ): Promise<ConversationInterface | null> {
+    try {
+      return await ConversationModel.findOneAndDelete(query, options).lean();
+    } catch (error: any) {
+      console.log(error.message);
+      return null;
+    }
   }
 }

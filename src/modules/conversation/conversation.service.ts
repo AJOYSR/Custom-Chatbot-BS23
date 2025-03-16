@@ -85,7 +85,9 @@ export class ConversationService {
     } catch (error) {
       throw new HttpException(
         {
-          message: error.message || BotErrorMessages.COULD_NOT_DELETE_BOT,
+          message:
+            error.message ||
+            ConversationErrorMessages.COULD_NOT_CREATE_CONVERSATION,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -184,7 +186,8 @@ export class ConversationService {
       throw new HttpException(
         {
           message:
-            error.message || ConversationErrorMessages.INVALID_CONVERSATION_ID,
+            error.message ||
+            ConversationErrorMessages.COULD_NOT_UPDATE_CONVERSATION,
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -209,6 +212,37 @@ export class ConversationService {
       return this.response.success(data, { page, limit, total });
     } catch (error) {
       throw new Error('Error fetching conversations');
+    }
+  }
+
+  // Get a conversation by ID
+  async deleteConversation(id: string): Promise<string> {
+    try {
+      const validConversation = await this.conversationRepository.findById(id);
+      if (!validConversation) {
+        throw new Error(ConversationErrorMessages.INVALID_CONVERSATION_ID);
+      }
+      const conversationDeleted =
+        await this.conversationRepository.deleteConversationById({
+          _id: id,
+        });
+      if (!conversationDeleted) {
+        throw new Error(
+          ConversationErrorMessages.COULD_NOT_DELETE_CONVERSATION,
+        );
+      }
+
+      return this.response.success({
+        message: 'Conversation deleted successfully',
+      });
+    } catch (error) {
+      throw new HttpException(
+        {
+          message:
+            error.message || ConversationErrorMessages.INVALID_CONVERSATION_ID,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

@@ -68,9 +68,27 @@ export const enum BotSuccessMessages {
 
 export const enum ConversationErrorMessages {
   INVALID_CONVERSATION_ID = 'message.conversation.errors.invalidConversationId',
-  COULD_NOT_UPDATE_BOT = 'message.bot.errors.couldNotUpdateBot',
-  COULD_NOT_DELETE_BOT = 'message.bot.errors.couldNotDeleteBot',
+  COULD_NOT_UPDATE_CONVERSATION = 'message.conversation.errors.couldNotUpdateConversation',
+  COULD_NOT_DELETE_CONVERSATION = 'message.conversation.errors.couldNotDeleteConversation',
+  COULD_NOT_CREATE_CONVERSATION = 'message.conversation.errors.couldNotCreateConversation',
 }
 export const enum ConversationSuccessMessages {
   INVALID_BOT_ID = 'message.bot.errors.botCreationSuccessful',
+}
+
+export const enum UnsolvedErrorMessages {
+  INVALID_UNSOLVED_QUERY_ID = 'message.unsolved.errors.invalidConversationId',
+  COULD_NOT_UPDATE_UNSOLVED_QUERY = 'message.unsolved.errors.couldNotUpdatedQuery',
+  COULD_NOT_DELETE_UNSOLVED_QUERY = 'message.unsolved.errors.couldNotDeletedQuery',
+}
+export const enum UnsolvedSuccessMessages {}
+
+export const enum QnaErrorMessages {
+  INVALID_QNA_ID = 'message.qna.errors.invalidQnAId',
+  COULD_NOT_UPDATE_QNA = 'message.qna.errors.couldNotUpdatedQnA',
+  COULD_NOT_DELETE_QNA = 'message.qna.errors.couldNotDeletedQnA',
+  COULD_NOT_CREATE_QNA = 'message.qna.errors.couldNotCreateQnA',
+}
+export const enum QnaSuccessMessages {
+  QNA_CREATED_SUCCESSFULLY = 'message.qna.success.successFullyCreated',
 }

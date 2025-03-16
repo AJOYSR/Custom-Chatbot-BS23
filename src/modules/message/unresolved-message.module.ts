@@ -8,6 +8,8 @@ import {
 import { UnresolvedQueryService } from './unresolved-message.service';
 import { UnresolvedQueryRepository } from './unresolved-message.repository';
 import { UnresolvedQueryController } from './unresolved-message.controller';
+import { APIResponse } from 'src/internal/api-response/api-response.service';
+import { PaginationService } from '../pagination/pagination.service';
 
 @Module({
   imports: [
@@ -16,7 +18,12 @@ import { UnresolvedQueryController } from './unresolved-message.controller';
     ]),
   ],
   controllers: [UnresolvedQueryController],
-  providers: [UnresolvedQueryService, UnresolvedQueryRepository],
+  providers: [
+    UnresolvedQueryService,
+    UnresolvedQueryRepository,
+    APIResponse,
+    PaginationService,
+  ],
   exports: [UnresolvedQueryService],
 })
 export class UnresolvedQueryModule {}

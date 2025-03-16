@@ -31,20 +31,29 @@ export class UnresolvedQueryRepository {
   }
 
   // Get all unresolved queries with pagination
-  async findAll(
-    page: number,
-    limit: number,
-  ): Promise<{ total: number; data: UnresolvedQueryInterface[] }> {
+
+  async findAllUnresolvedQuery(
+    query: Record<string, any>,
+    pagination: { skip: number; limit: number },
+  ): Promise<UnresolvedQueryInterface[] | null> {
     try {
-      const skip = (page - 1) * limit;
-      const [total, data] = await Promise.all([
-        UnresolvedQueryModel.countDocuments().exec(),
-        UnresolvedQueryModel.find().skip(skip).limit(limit).lean().exec(),
-      ]);
-      return { total, data };
+      return await UnresolvedQueryModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(pagination.skip)
+        .limit(pagination.limit)
+        .lean();
     } catch (err) {
-      console.error('Error fetching unresolved queries:', err);
-      throw new Error('Failed to fetch unresolved queries');
+      console.log(err);
+      return [];
+    }
+  }
+
+  async totalUnsolvedQueryCount(query: Record<string, any>): Promise<number> {
+    try {
+      return await UnresolvedQueryModel.countDocuments(query).lean();
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   }
 
@@ -69,7 +78,7 @@ export class UnresolvedQueryRepository {
   // Delete an unresolved query by ID
   async deleteById(id: string): Promise<boolean> {
     try {
-      const result = await UnresolvedQueryModel.findByIdAndDelete(id).exec();
+      const result = await UnresolvedQueryModel.findByIdAndDelete(id).lean();
       return result ? true : false;
     } catch (err) {
       console.error(`Error deleting unresolved query ${id}:`, err);
