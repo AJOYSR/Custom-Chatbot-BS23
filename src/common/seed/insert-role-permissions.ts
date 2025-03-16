@@ -84,6 +84,47 @@ export const up = async (db: Db): Promise<void> => {
         _id: new ObjectId('65f7f59e71d785b823d8b6ec'),
         name: PERMISSIONS.DELETE_BOT,
       },
+
+      // Unresolved Query Management Permissions
+      {
+        _id: new ObjectId('67d654ff2f612eb892c5e240'),
+        name: PERMISSIONS.VIEW_UNRESOLVED_QUERY_LIST,
+      },
+      {
+        _id: new ObjectId('67d655088c735861c9616c8e'),
+        name: PERMISSIONS.VIEW_UNRESOLVED_QUERY_DETAIL,
+      },
+      {
+        _id: new ObjectId('67d6550ec38abc26e9be222a'),
+        name: PERMISSIONS.UPDATE_UNRESOLVED_QUERY,
+      },
+      {
+        _id: new ObjectId('67d6560ee8fa42909867bc64'),
+        name: PERMISSIONS.DELETE_UNRESOLVED_QUERY,
+      },
+
+      // Qna Management Permissions
+
+      {
+        _id: new ObjectId('67d65515c24213b892c5e242'),
+        name: PERMISSIONS.CREATE_QNA,
+      },
+      {
+        _id: new ObjectId('67d6551e82862f61c9616c90'),
+        name: PERMISSIONS.UPDATE_QNA,
+      },
+      {
+        _id: new ObjectId('67d65526d79213909867bc65'),
+        name: PERMISSIONS.VIEW_QNA_DETAIL,
+      },
+      {
+        _id: new ObjectId('67d65527571b18909867bc66'),
+        name: PERMISSIONS.VIEW_QNA_LIST,
+      },
+      {
+        _id: new ObjectId('67d65530346e1f61c9616c91'),
+        name: PERMISSIONS.DELETE_QNA,
+      },
     ];
 
     const role_permissions = [
@@ -159,6 +200,55 @@ export const up = async (db: Db): Promise<void> => {
         permissionId: new ObjectId('65f7f59e71d785b823d8b6ec'), // DELETE_BOT
       },
 
+      // Unresolved Query Management Permissions
+      {
+        _id: new ObjectId('67d6578c7ce0dd7585e318d2'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d654ff2f612eb892c5e240'), // VIEW_UNRESOLVED_QUERY_LIST
+      },
+      {
+        _id: new ObjectId('67d657981a4af6a4fd244339'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d655088c735861c9616c8e'), // VIEW_UNRESOLVED_QUERY_DETAIL
+      },
+      {
+        _id: new ObjectId('67d6579e980793015a4d8951'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d6550ec38abc26e9be222a'), // UPDATE_UNRESOLVED_QUERY
+      },
+      {
+        _id: new ObjectId('67d657a4cbe573a797d9460b'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d6560ee8fa42909867bc64'), // DELETE_UNRESOLVED_QUERY
+      },
+
+      // Qna Related Permissions
+      {
+        _id: new ObjectId('67d657b06a357796b84b82b8'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d65515c24213b892c5e242'), // CREATE QNA
+      },
+      {
+        _id: new ObjectId('67d657b739834a3f0a595c0a'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d6551e82862f61c9616c90'), // UPDATE QNA
+      },
+      {
+        _id: new ObjectId('67d6d294e5168796cb9c9dc6'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d65526d79213909867bc65'), //  QNA DETAIL
+      },
+      {
+        _id: new ObjectId('67d657be88540f253708495c'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d65527571b18909867bc66'), // QNA LIST
+      },
+      {
+        _id: new ObjectId('67d657c52c5b4a5c7f5a6922'),
+        roleId: new ObjectId('65e5ba573d7272e56ee23123'), // super-admin
+        permissionId: new ObjectId('67d65530346e1f61c9616c91'), //DELETE_QNA
+      },
+
       // Customer (65e990138dc8b15a12a49c6d) permissions
       {
         _id: new ObjectId('67cabf30fdd9b88d2aba1517'),
@@ -190,6 +280,55 @@ export const up = async (db: Db): Promise<void> => {
         _id: new ObjectId('67d2bf3b5abda879dec802cc'),
         roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
         permissionId: new ObjectId('67cabc76c6b267a0b3383d2f'), // DELETE_CONVERSATION
+      },
+
+      // Unresolved Query Management Permissions
+      {
+        _id: new ObjectId('67d657ac6cb06207bf24239b'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d654ff2f612eb892c5e240'), // VIEW_UNRESOLVED_QUERY_LIST
+      },
+      {
+        _id: new ObjectId('67d657b1cdafa18765f12997'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d655088c735861c9616c8e'), // VIEW_UNRESOLVED_QUERY_DETAIL
+      },
+      {
+        _id: new ObjectId('67d657b6441a897ef3e5e0b5'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d6550ec38abc26e9be222a'), // UPDATE_UNRESOLVED_QUERY
+      },
+      {
+        _id: new ObjectId('67d657bbfd4faf42a61beeb4'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d6560ee8fa42909867bc64'), // DELETE_UNRESOLVED_QUERY
+      },
+
+      // Qna Related Permissions
+      {
+        _id: new ObjectId('67d6d1e41bbb40d1e23387ab'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d65515c24213b892c5e242'), // CREATE QNA
+      },
+      {
+        _id: new ObjectId('67d6d1ecbed9307a983943af'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d6551e82862f61c9616c90'), // UPDATE QNA
+      },
+      {
+        _id: new ObjectId('67d6d1f13f24638b1c4b1e1b'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d65526d79213909867bc65'), //  customer
+      },
+      {
+        _id: new ObjectId('67d6d1f66c4b911065236319'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // super-admin
+        permissionId: new ObjectId('67d65527571b18909867bc66'), // customer
+      },
+      {
+        _id: new ObjectId('67d6d1fdb9c94ac95095fc40'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('67d65530346e1f61c9616c91'), //DELETE_QNA
       },
     ];
 

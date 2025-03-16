@@ -1,16 +1,13 @@
 export class CreateUserRequest {
-  userId?: string;
-  firstName: string;
-  lastName: string;
+  _id?: string;
+  name: string;
   email: string;
   roleId: string;
-  gunRangeId?: string;
   phone?: string;
 }
 
 export class GetAllUsersQuery {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
 }
 

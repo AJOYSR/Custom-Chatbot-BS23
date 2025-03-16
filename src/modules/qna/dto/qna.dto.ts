@@ -10,10 +10,12 @@ import {
   ArrayMinSize,
   ValidateNested,
 } from 'class-validator';
+import { PaginationQueryDto } from 'src/modules/pagination/types';
 
 export class QnaDto implements QnaInterface {
   @ApiProperty()
   id: string;
+
   @ApiProperty()
   question: string;
 
@@ -28,6 +30,7 @@ export class QnaDto implements QnaInterface {
 
   @ApiProperty()
   updatedAt: Date;
+
   @ApiProperty({ required: false })
   cosine_similarity?: string;
 
@@ -43,28 +46,32 @@ export class QnaDto implements QnaInterface {
 
 export class UpdateVectorDto {
   @ApiProperty({ required: false })
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   question?: string;
 
   @ApiProperty({ required: false })
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   answer?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  embedding?: any;
 }
 
 export class SearchVectorByQuestionDto {
   @ApiProperty({ required: true })
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   question: string;
 
   @ApiProperty({ required: false })
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   @IsOptional()
   botId?: string;
 
   @ApiProperty({ required: false, default: 5 })
-  @IsNumber()
+  @IsNumber({}, { message: 'validation.isNumber' })
   @IsOptional()
   limit?: number;
 }
@@ -74,8 +81,8 @@ export class SearchVectorDto {
     description: 'The vector embedding to search with',
     type: [Number],
   })
-  @IsNotEmpty()
-  @IsArray()
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsArray({ message: 'validation.isArray' })
   embedding: number[];
 
   @ApiProperty({
@@ -84,24 +91,24 @@ export class SearchVectorDto {
     default: 5,
   })
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: 'validation.isNumber' })
   limit?: number;
 }
 
 export class CreateVectorDto {
   @ApiProperty({ description: 'The question text' })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsString({ message: 'validation.isString' })
   question: string;
 
   @ApiProperty({ description: 'The answer text' })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsString({ message: 'validation.isString' })
   answer: string;
 
   @ApiProperty({ description: 'The company ID' })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  @IsString({ message: 'validation.isString' })
   botId: string;
 }
 
@@ -110,8 +117,8 @@ export class CreateVectorBatchDto {
     type: [CreateVectorDto],
     description: 'Array of vectors to create',
   })
-  @IsArray()
-  @ArrayMinSize(1)
+  @IsArray({ message: 'validation.isArray' })
+  @ArrayMinSize(1, { message: 'validation.arrayMinSize' })
   @ValidateNested({ each: true })
   @Type(() => CreateVectorDto)
   vectors: CreateVectorDto[];
@@ -119,4 +126,11 @@ export class CreateVectorBatchDto {
 
 export class QnaListResponseDto {
   data: QnaDto[];
+}
+
+export class GetAlQnaQueryDto extends PaginationQueryDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: 'validation.isString' })
+  q: string;
 }

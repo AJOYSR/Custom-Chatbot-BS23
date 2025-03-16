@@ -16,7 +16,7 @@ import { QnAModule } from './modules/qna/qna.module';
 import { AuthModule } from './modules/auth/auth.module';
 import * as path from 'path';
 import { UnresolvedQueryModule } from './modules/message/unresolved-message.module';
-import { ProfileModule } from './profile/profile.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { RequestLoggerMiddleware } from './internal/middlewares/request-logger.middleware';
 import { GeminiModule } from './modules/gemini/gemini.module';
 

@@ -1,15 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   CreateUnresolvedQueryDto,
   GetUnresolvedQueryListResponseDto,
   UnresolvedQueryResponseDto,
+  UpdateUnresolvedQueryDto,
 } from './dto/unsolved-message.dto';
 import { UnresolvedQueryRepository } from './unresolved-message.repository';
-import { UNPROCESSED_MESSAGE_STATUS } from 'src/entities/enum.entity';
+
+import { APIResponse } from 'src/internal/api-response/api-response.service';
+import { UnsolvedErrorMessages } from 'src/entities/messages.entity';
+import { PaginationQuery } from 'src/entities/common.entity';
+import { generateSearchQuery } from 'src/helper/utils';
+import { PaginationService } from '../pagination/pagination.service';
 
 @Injectable()
 export class UnresolvedQueryService {
-  constructor(private readonly unresolvedQueryRep: UnresolvedQueryRepository) {}
+  constructor(
+    private readonly unresolvedQueryRep: UnresolvedQueryRepository,
+    private readonly response: APIResponse,
+    private readonly pagination: PaginationService,
+  ) {}
 
   // Create an unresolved query
   async create(
@@ -18,45 +28,109 @@ export class UnresolvedQueryService {
     const query = await this.unresolvedQueryRep.create(
       createUnresolvedQueryDto,
     );
-    return { data: query };
+    return this.response.success(query);
   }
 
   // Get an unresolved query by ID
   async getById(id: string): Promise<UnresolvedQueryResponseDto> {
-    const query = await this.unresolvedQueryRep.findById(id);
-    if (!query) {
-      throw new NotFoundException(`Query with ID ${id} not found`);
+    try {
+      const validQuery = await this.unresolvedQueryRep.findById(id);
+      if (!validQuery) {
+        throw new Error(UnsolvedErrorMessages.INVALID_UNSOLVED_QUERY_ID);
+      }
+      const query = await this.unresolvedQueryRep.findById(id);
+      if (!query) {
+        throw new Error(UnsolvedErrorMessages.INVALID_UNSOLVED_QUERY_ID);
+      }
+      return { data: query };
+    } catch (err) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: err.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
-    return { data: query };
   }
 
   // Get a list of unresolved queries with pagination
   async getAll(
-    page: number,
-    limit: number,
+    condition: { q: string },
+    pagination: PaginationQuery,
   ): Promise<GetUnresolvedQueryListResponseDto> {
-    const { total, data } = await this.unresolvedQueryRep.findAll(page, limit);
-    return { total, page, limit, data };
+    const query = generateSearchQuery(condition);
+    const { data, page, limit, total } = await this.pagination.paginate(
+      this.unresolvedQueryRep.findAllUnresolvedQuery.bind(
+        this.unresolvedQueryRep,
+      ),
+      this.unresolvedQueryRep.totalUnsolvedQueryCount.bind(
+        this.unresolvedQueryRep,
+      ),
+      query,
+      pagination,
+    );
+
+    return this.response.success(data, { page, limit, total });
   }
 
   // Update the status of an unresolved query
   async updateStatus(
     id: string,
-    status: UNPROCESSED_MESSAGE_STATUS,
+    data: UpdateUnresolvedQueryDto,
   ): Promise<UnresolvedQueryResponseDto> {
-    const updatedQuery = await this.unresolvedQueryRep.updateStatus(id, status);
-    if (!updatedQuery) {
-      throw new NotFoundException(`Query with ID ${id} not found`);
+    try {
+      const validQuery = await this.unresolvedQueryRep.findById(id);
+      if (!validQuery) {
+        throw new Error(UnsolvedErrorMessages.INVALID_UNSOLVED_QUERY_ID);
+      }
+
+      const { status } = data;
+      const updatedQuery = await this.unresolvedQueryRep.updateStatus(
+        id,
+        status,
+      );
+
+      if (!updatedQuery) {
+        throw new Error(UnsolvedErrorMessages.COULD_NOT_UPDATE_UNSOLVED_QUERY);
+      }
+      return this.response.success(updatedQuery);
+    } catch (err) {
+      throw new HttpException(
+        {
+          message:
+            err.message ||
+            UnsolvedErrorMessages.COULD_NOT_UPDATE_UNSOLVED_QUERY,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    return { data: updatedQuery };
   }
 
   // Delete an unresolved query by ID
-  async deleteById(id: string): Promise<{ message: string }> {
-    const deleted = await this.unresolvedQueryRep.deleteById(id);
-    if (!deleted) {
-      throw new NotFoundException(`Query with ID ${id} not found`);
+  async deleteById(id: string): Promise<string> {
+    try {
+      const validQuery = await this.unresolvedQueryRep.findById(id);
+      if (!validQuery) {
+        throw new Error(UnsolvedErrorMessages.INVALID_UNSOLVED_QUERY_ID);
+      }
+
+      const deleted = await this.unresolvedQueryRep.deleteById(id);
+      if (!deleted) {
+        throw new Error(UnsolvedErrorMessages.COULD_NOT_DELETE_UNSOLVED_QUERY);
+      }
+      return this.response.success({
+        message: 'Unresolved query deleted successfully',
+      });
+    } catch (err) {
+      throw new HttpException(
+        {
+          message:
+            err.message ||
+            UnsolvedErrorMessages.COULD_NOT_DELETE_UNSOLVED_QUERY,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    return { message: `Query with ID ${id} deleted successfully` };
   }
 }

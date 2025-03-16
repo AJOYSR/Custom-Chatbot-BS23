@@ -3,11 +3,19 @@ import { UserInterface } from './user.entity';
 
 const UserSchema = new Schema<UserInterface>(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+    },
+    phone: {
+      type: String,
+      required: false,
     },
     password: {
       type: String,

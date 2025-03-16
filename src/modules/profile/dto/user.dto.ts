@@ -13,10 +13,7 @@ export class UserDto implements User {
   _id: string;
 
   @ApiProperty()
-  firstName: string;
-
-  @ApiProperty()
-  lastName: string;
+  name: string;
 
   @ApiProperty()
   photo: string;
@@ -41,12 +38,7 @@ export class UpdatePersonalUserRequestDto implements Partial<User> {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString({ message: 'validation.isString' })
-  firstName: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString({ message: 'validation.isString' })
-  lastName: string;
+  name: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

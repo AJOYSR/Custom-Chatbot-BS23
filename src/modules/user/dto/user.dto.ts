@@ -9,26 +9,45 @@ import {
   IsOptional,
   MinLength,
   Matches,
+  IsNotEmpty,
+  IsPhoneNumber,
 } from 'class-validator';
 import { PERMISSIONS, ROLE } from 'src/entities/enum.entity';
+import { PaginationQueryDto } from 'src/modules/pagination/types';
 
 export class CreateUserDto {
+  @ApiProperty({
+    description: 'User name',
+    example: 'John Smith',
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  name: string;
+
   @ApiProperty({
     description: 'User email address',
     example: 'user@example.com',
   })
-  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsEmail({}, { message: 'validation.isEmail' })
   email: string;
+
+  @ApiProperty({
+    description: 'User phone number',
+    example: '+1234567890',
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsPhoneNumber(null, { message: 'validation.isMobilePhone' })
+  phone: string;
 
   @ApiProperty({
     description:
       'User password (min 8 chars, must contain letters and numbers)',
     example: 'Password123!',
   })
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: 'validation.isString' })
+  @MinLength(8, { message: 'validation.minLength' })
   @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-    message: 'Password must contain at least one letter and one number',
+    message: 'validation.passwordComplexity',
   })
   password: string;
 
@@ -37,7 +56,7 @@ export class CreateUserDto {
     enum: ROLE,
     example: ROLE.CUSTOMER,
   })
-  @IsEnum(ROLE, { message: 'Invalid role provided' })
+  @IsEnum(ROLE, { message: 'validation.isEnum' })
   role: ROLE;
 
   @ApiProperty({
@@ -47,8 +66,8 @@ export class CreateUserDto {
     isArray: true,
     example: [PERMISSIONS.VIEW_USER_PROFILE, PERMISSIONS.VIEW_BOT_LIST],
   })
-  @IsArray()
-  @IsEnum(PERMISSIONS, { each: true, message: 'Invalid permission provided' })
+  @IsArray({ message: 'validation.isArray' })
+  @IsEnum(PERMISSIONS, { each: true, message: 'validation.isEnum' })
   permissions: PERMISSIONS[];
 
   @ApiProperty({
@@ -56,7 +75,7 @@ export class CreateUserDto {
     example: true,
     default: true,
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @IsOptional()
   isActive?: boolean = true;
 
@@ -65,7 +84,7 @@ export class CreateUserDto {
     example: false,
     default: false,
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @IsOptional()
   isEmailVerified?: boolean = false;
 }
@@ -74,13 +93,32 @@ export class CreateUserDto {
 
 export class UpdateUserDto {
   @ApiProperty({
+    description: 'User name',
+    example: 'John Smith',
+    required: false,
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsOptional()
+  name?: string;
+
+  @ApiProperty({
     description: 'User email address',
     example: 'user@example.com',
     required: false,
   })
-  @IsEmail({}, { message: 'Please provide a valid email address' })
+  @IsEmail({}, { message: 'validation.isEmail' })
   @IsOptional()
   email?: string;
+
+  @ApiProperty({
+    description: 'User phone number',
+    example: '+1234567890',
+    required: false,
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsPhoneNumber(null, { message: 'validation.isMobilePhone' })
+  @IsOptional()
+  phone?: string;
 
   @ApiProperty({
     description:
@@ -88,10 +126,10 @@ export class UpdateUserDto {
     example: 'NewPassword123!',
     required: false,
   })
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: 'validation.isString' })
+  @MinLength(8, { message: 'validation.minLength' })
   @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-    message: 'Password must contain at least one letter and one number',
+    message: 'validation.passwordComplexity',
   })
   @IsOptional()
   password?: string;
@@ -102,7 +140,7 @@ export class UpdateUserDto {
     example: ROLE.CUSTOMER,
     required: false,
   })
-  @IsEnum(ROLE, { message: 'Invalid role provided' })
+  @IsEnum(ROLE, { message: 'validation.isEnum' })
   @IsOptional()
   role?: ROLE;
 
@@ -114,8 +152,8 @@ export class UpdateUserDto {
     example: [PERMISSIONS.VIEW_USER_PROFILE, PERMISSIONS.VIEW_BOT_LIST],
     required: false,
   })
-  @IsArray()
-  @IsEnum(PERMISSIONS, { each: true, message: 'Invalid permission provided' })
+  @IsArray({ message: 'validation.isArray' })
+  @IsEnum(PERMISSIONS, { each: true, message: 'validation.isEnum' })
   @IsOptional()
   permissions?: PERMISSIONS[];
 
@@ -124,7 +162,7 @@ export class UpdateUserDto {
     example: true,
     required: false,
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @IsOptional()
   isActive?: boolean;
 
@@ -133,7 +171,7 @@ export class UpdateUserDto {
     example: true,
     required: false,
   })
-  @IsBoolean()
+  @IsBoolean({ message: 'validation.isBoolean' })
   @IsOptional()
   isEmailVerified?: boolean;
 }
@@ -148,10 +186,22 @@ export class UserResponseDto {
   _id: string;
 
   @ApiProperty({
+    description: 'User name',
+    example: 'John Smith',
+  })
+  name: string;
+
+  @ApiProperty({
     description: 'User email address',
     example: 'user@example.com',
   })
   email: string;
+
+  @ApiProperty({
+    description: 'User phone number',
+    example: '+1234567890',
+  })
+  phone: string;
 
   @ApiProperty({
     description: 'User role',
@@ -201,17 +251,17 @@ export class PasswordUpdateDto {
     description: 'Current password',
     example: 'CurrentPassword123!',
   })
-  @IsString()
+  @IsString({ message: 'validation.isString' })
   currentPassword: string;
 
   @ApiProperty({
     description: 'New password (min 8 chars, must contain letters and numbers)',
     example: 'NewPassword123!',
   })
-  @IsString()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @IsString({ message: 'validation.isString' })
+  @MinLength(8, { message: 'validation.minLength' })
   @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-    message: 'Password must contain at least one letter and one number',
+    message: 'validation.passwordComplexity',
   })
   newPassword: string;
 }
@@ -222,6 +272,13 @@ export class AddPermissionDto {
     enum: PERMISSIONS,
     example: PERMISSIONS.VIEW_BOT_LIST,
   })
-  @IsEnum(PERMISSIONS, { message: 'Invalid permission provided' })
+  @IsEnum(PERMISSIONS, { message: 'validation.isEnum' })
   permission: PERMISSIONS;
+}
+
+export class GetAllUserQueryDto extends PaginationQueryDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: 'validation.isString' })
+  q: string;
 }

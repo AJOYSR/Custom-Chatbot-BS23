@@ -38,7 +38,6 @@ export class ProfileService {
    * @throws HttpException if unable to retrieve the user's profile.
    */
   async getMyProfile(user: JwtPayload): Promise<IResponse<UserInterface>> {
-    console.log('🚀 ~ ProfileService ~ getMyProfile ~ user:', user);
     const userInfo = await this.userRepo.findUserById(user._id);
 
     if (!userInfo)
