@@ -94,7 +94,7 @@ export class UserService {
   ): void {
     this.sendEmail({
       email,
-      templatePath: 'dist/src/helper/email/templates/temporary-password.html',
+      templatePath: 'src/helper/email/templates/temporary-password.html',
       renderValue: { temporaryPassword },
       subject: 'Your Authentication Details',
     });

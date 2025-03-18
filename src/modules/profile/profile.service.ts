@@ -185,7 +185,7 @@ export class ProfileService {
         // Send an email containing the verification code for email change
         this.userService.sendEmail({
           email,
-          templatePath: 'dist/helper/email/templates/change-email.html',
+          templatePath: 'src/helper/email/templates/change-email.html',
           renderValue: { code },
           subject: 'Change Email Request',
         });

@@ -6,7 +6,6 @@ import {
   IsNotEmpty,
   ValidateNested,
   IsEnum,
-  IsDate,
   IsObject,
 } from 'class-validator';
 import {
@@ -34,15 +33,6 @@ export class MessageDto implements Message {
   @IsString({ message: 'validation.isString' })
   @IsNotEmpty({ message: 'validation.notEmpty' })
   content: string;
-
-  @ApiProperty({
-    description: 'Timestamp when the message was sent',
-    example: new Date(),
-  })
-  @IsDate({ message: 'validation.isDate' })
-  @Type(() => Date)
-  @IsNotEmpty({ message: 'validation.notEmpty' })
-  timestamp: Date;
 }
 export class ConversationDto implements Partial<ConversationInterface> {
   @ApiProperty({
