@@ -1,14 +1,25 @@
 import { Global, Injectable } from '@nestjs/common';
 
-import * as sendgrid from '@sendgrid/mail';
+import * as nodemailer from 'nodemailer';
 import { mailConfig } from 'src/config/mail';
-sendgrid.setApiKey(mailConfig.apiKey);
 
 @Global()
 @Injectable()
 export class MailService {
   private readonly maxRetries: number = 3;
+  emailTransport() {
+    const transporter = nodemailer.createTransport({
+      host: mailConfig.host,
+      port: mailConfig.port,
+      secure: false,
+      auth: {
+        user: mailConfig.user,
+        pass: mailConfig.emailPassword,
+      },
+    });
 
+    return transporter;
+  }
   async sendMailWithRetry(
     email: string,
     subject: string,
@@ -18,14 +29,14 @@ export class MailService {
     try {
       const data = {
         to: email,
-        from: 'hello@longshotcameras.com',
+        from: mailConfig.user,
         subject,
         html: mailBody,
       };
+      const transport = this.emailTransport();
 
-      const res = await sendgrid.send(data);
-
-      if (!res) return false;
+      await transport.sendMail(data);
+      if (!transport) return false;
       return true;
     } catch (error) {
       console.log('sendMail err: ', JSON.stringify(error, null, 2));

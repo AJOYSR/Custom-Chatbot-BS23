@@ -41,11 +41,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     description:
-      'User password (min 8 chars, must contain letters and numbers)',
+      'User password (min 6 chars, must contain letters and numbers)',
     example: 'Password123!',
   })
   @IsString({ message: 'validation.isString' })
-  @MinLength(8, { message: 'validation.minLength' })
+  @MinLength(6, { message: 'validation.minLength' })
   @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
     message: 'validation.passwordComplexity',
   })
@@ -56,37 +56,9 @@ export class CreateUserDto {
     enum: ROLE,
     example: ROLE.CUSTOMER,
   })
-  @IsEnum(ROLE, { message: 'validation.isEnum' })
-  role: ROLE;
-
-  @ApiProperty({
-    description: 'User permissions',
-    type: [String],
-    enum: PERMISSIONS,
-    isArray: true,
-    example: [PERMISSIONS.VIEW_USER_PROFILE, PERMISSIONS.VIEW_BOT_LIST],
-  })
-  @IsArray({ message: 'validation.isArray' })
-  @IsEnum(PERMISSIONS, { each: true, message: 'validation.isEnum' })
-  permissions: PERMISSIONS[];
-
-  @ApiProperty({
-    description: 'User active status',
-    example: true,
-    default: true,
-  })
-  @IsBoolean({ message: 'validation.isBoolean' })
-  @IsOptional()
-  isActive?: boolean = true;
-
-  @ApiProperty({
-    description: 'Email verification status',
-    example: false,
-    default: false,
-  })
-  @IsBoolean({ message: 'validation.isBoolean' })
-  @IsOptional()
-  isEmailVerified?: boolean = false;
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'isNotEmpty' })
+  role: string;
 }
 
 // update-user.dto.ts

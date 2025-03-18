@@ -72,7 +72,7 @@ export class AuthService {
       // Send a verification email
       this.sendEmail({
         email: user.email,
-        templatePath: 'dist/src/helper/email/templates/verify-email.html',
+        templatePath: 'src/helper/email/templates/verify-email.html',
         url: `${coreConfig.baseUrl}/api/auth/verify-email`,
         subject: 'Confirmation Email',
       });
@@ -184,6 +184,8 @@ export class AuthService {
    */
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.userRepo.findUser({ email });
+    console.log('🚀 ~ AuthService ~ forgotPassword ~ user:', user);
+
     if (!user)
       throw new HttpException(
         { message: AuthErrorMessages.INVALID_EMAIL },
@@ -194,7 +196,7 @@ export class AuthService {
       // Send the email to reset the password
       this.sendEmail({
         email: user.email,
-        templatePath: 'dist/src/helper/email/templates/reset-password.html',
+        templatePath: 'src/helper/email/templates/reset-password.html',
         url: `${coreConfig.frontendBaseUrl}/${authConfig.forgotPassword.resetUrl}`,
         subject: 'Reset Password',
         expirationTime: Date.now() + authConfig.forgotPassword.expirationTime,
