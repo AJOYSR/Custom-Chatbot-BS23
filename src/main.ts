@@ -17,21 +17,17 @@ async function bootstrap() {
   // Create a new Nest application instance
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     whitelist: true,
-  //     transform: true,
-  //   }),
-  // );
   // Set the global prefix for all routes
   app.setGlobalPrefix(coreConfig.apiPrefix);
-  // Enable CORS
+
+  // Enable CORS with more permissive configuration for development
   app.enableCors({
-    allowedHeaders: '*',
-    origin: '*',
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
     credentials: true,
   });
+
   // Global interceptor to exclude embedding field
   app.useGlobalInterceptors(new ExcludeEmbeddingInterceptor());
 

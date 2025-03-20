@@ -3,9 +3,13 @@ import { UserInterface } from './user.entity';
 
 const UserSchema = new Schema<UserInterface>(
   {
-    name: {
+    firstName: {
       type: String,
       required: true,
+    },
+    lastName: {
+      type: String,
+      required: false,
     },
     email: {
       type: String,

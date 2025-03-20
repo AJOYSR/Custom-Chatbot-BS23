@@ -37,13 +37,26 @@ export class UnresolvedQueryRepository {
     pagination: { skip: number; limit: number },
   ): Promise<UnresolvedQueryInterface[] | null> {
     try {
+      // Check if we need to fix the population path
+      const populateOptions = [
+        {
+          path: 'botId',
+          select: 'name _id',
+        },
+        {
+          path: 'conversationId',
+          select: '_id',
+        },
+      ];
+
       return await UnresolvedQueryModel.find(query)
+        .populate(populateOptions)
         .sort({ createdAt: -1 })
         .skip(pagination.skip)
         .limit(pagination.limit)
         .lean();
     } catch (err) {
-      console.log(err);
+      console.log('🚀 ~ UnresolvedQueryRepository ~ err:', err);
       return [];
     }
   }
@@ -52,7 +65,11 @@ export class UnresolvedQueryRepository {
     try {
       return await UnresolvedQueryModel.countDocuments(query).lean();
     } catch (err) {
-      console.log(err);
+      console.log(
+        '🚀 ~ UnresolvedQueryRepository ~ totalUnsolvedQueryCount ~ err:',
+        err,
+      );
+
       return null;
     }
   }

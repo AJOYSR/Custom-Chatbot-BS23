@@ -129,6 +129,11 @@ export class GetAllConversationQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString({ message: 'validation.isString' })
   q: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: 'validation.isString' })
+  botId: string;
 }
 
 export class UpdateConversationDto

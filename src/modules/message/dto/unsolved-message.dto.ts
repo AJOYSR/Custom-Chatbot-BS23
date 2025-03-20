@@ -37,7 +37,7 @@ export class CreateUnresolvedQueryDto
   })
   @IsString({ message: 'validation.isString' })
   @IsNotEmpty({ message: 'validation.notEmpty' })
-  botId: string;
+  botId: any;
 
   @ApiProperty({
     description: 'The conversation ID associated with this query',
@@ -45,7 +45,7 @@ export class CreateUnresolvedQueryDto
   })
   @IsString({ message: 'validation.isString' })
   @IsNotEmpty({ message: 'validation.notEmpty' })
-  conversationId: string;
+  conversationId: any;
 
   @ApiProperty({
     description: 'The unresolved user query',
@@ -92,6 +92,11 @@ export class GetAllUnsolvedQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString({ message: 'validation.isString' })
   q: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString({ message: 'validation.isString' })
+  botId?: string;
 }
 
 export class UpdateUnresolvedQueryDto

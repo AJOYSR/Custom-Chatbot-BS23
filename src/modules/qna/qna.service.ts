@@ -64,6 +64,7 @@ export class QnAService {
 
   async findAll(condition: { q: string }, pagination: PaginationQueryDto) {
     const query = generateSearchQuery(condition);
+    console.log('🚀 ~ QnAService ~ findAll ~ query:', query);
 
     // Paginate the list of users based on the generated query, role IDs query, and pagination settings
     const { data, page, limit, total } = await this.paginationService.paginate(

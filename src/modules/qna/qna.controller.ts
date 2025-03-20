@@ -22,12 +22,13 @@ import { QnAService } from './qna.service';
 import {
   CreateVectorBatchDto,
   CreateVectorDto,
+  GetAlQnaQueryDto,
   SearchVectorByQuestionDto,
   SearchVectorDto,
   UpdateVectorDto,
 } from './dto/qna.dto';
 import { coreConfig } from 'src/config/core';
-import { GetAllBotQueryDto } from '../bot/dto/bot.dto';
+
 import { JwtAuthGuard } from 'src/guards/jwt-auth-guard';
 import { PERMISSIONS } from 'src/entities/enum.entity';
 import { RolesGuard } from 'src/guards/roles.guard';
@@ -86,7 +87,7 @@ export class QnAController {
   @ApiResponse({ status: 200, description: 'Return paginated qna' })
   @PermissionRequired(PERMISSIONS.VIEW_QNA_LIST)
   @UseGuards(RolesGuard)
-  async findAll(@Query() query: GetAllBotQueryDto) {
+  async findAll(@Query() query: GetAlQnaQueryDto) {
     const { page = 1, limit = coreConfig.paginationLimit, ...rest } = query;
     return await this.qnaService.findAll(rest, {
       page,

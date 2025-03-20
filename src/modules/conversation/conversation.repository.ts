@@ -22,7 +22,19 @@ export class ConversationRepository {
 
   // Get a conversation by ID
   async findById(id: string): Promise<ConversationInterface | null> {
-    return ConversationModel.findById(id).lean();
+    try {
+      return await ConversationModel.findById(id)
+        .populate([
+          {
+            path: 'botId',
+            select: 'name _id',
+          },
+        ])
+        .lean();
+    } catch (error) {
+      console.log('🚀 ~ ConversationRepository ~ findById ~ error:', error);
+      return null;
+    }
   }
 
   // Get a list of conversations with pagination
@@ -32,6 +44,12 @@ export class ConversationRepository {
   ): Promise<ConversationInterface[]> {
     try {
       return await ConversationModel.find(query)
+        .populate([
+          {
+            path: 'botId',
+            select: 'name _id',
+          },
+        ])
         .sort({ createdAt: -1 })
         .skip(pagination.skip)
         .limit(pagination.limit)

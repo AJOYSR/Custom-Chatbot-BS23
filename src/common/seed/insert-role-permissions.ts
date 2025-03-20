@@ -265,6 +265,11 @@ export const up = async (db: Db): Promise<void> => {
         roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
         permissionId: new ObjectId('65f1804d400e079ad7a3ff19'), // VIEW_BOT
       },
+      {
+        _id: new ObjectId('67dac88ae011cc2a6f9bd068'),
+        roleId: new ObjectId('65e990138dc8b15a12a49c6d'), // customer
+        permissionId: new ObjectId('65f03d0a02cf86afc4cb5c70'), // UPDATE_BOT
+      },
       // Conversation Permissions
       {
         _id: new ObjectId('67cabf358009bf35bba3ab67'),

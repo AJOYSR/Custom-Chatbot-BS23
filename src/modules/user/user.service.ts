@@ -126,6 +126,7 @@ export class UserService {
       },
       pagination,
     );
+    console.log('🚀 ~ UserService ~ total:', total);
 
     const users: UserInterface[] = [];
     for (const user of data as UserInterface[]) {
