@@ -11,7 +11,8 @@ export const up = async (db: Db): Promise<void> => {
   try {
     const superAdmin = {
       _id: new ObjectId(),
-      name: 'Ajoy Sarker',
+      firstName: 'Ajoy',
+      lastName: 'Sarker',
       email: 'admin@bs23.com',
       password: await bcrypt.hash('admin23', 10),
       role: new ObjectId('65e5ba573d7272e56ee23123'),

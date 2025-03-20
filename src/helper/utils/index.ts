@@ -55,13 +55,24 @@ export function deepClone(obj: any): any {
 
   return clone;
 }
-
-export function generateSearchQuery(condition: { q: string }): object {
-  const { q } = condition;
+export function generateSearchQuery(condition: {
+  botId?: string;
+  q?: string;
+}): object {
+  const { botId, q } = condition;
+  console.log('🚀 ~ condition:', condition);
   const query: Record<string, any> = {};
 
   if (q !== undefined && q !== '') {
     query.name = new RegExp(q, 'i');
   }
+
+  if (botId !== undefined && botId !== '') {
+    // Ensure botId is converted to ObjectId safely
+    query.botId = mongoose.Types.ObjectId.isValid(botId)
+      ? new mongoose.Types.ObjectId(botId)
+      : botId; // Changed from null to botId
+  }
+
   return query;
 }

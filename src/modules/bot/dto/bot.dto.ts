@@ -59,8 +59,11 @@ export class BotDto {
   })
   handoverToHuman?: boolean;
 
-  @ApiProperty({ description: 'System prompt for the bot', required: false })
-  systemPrompt?: string;
+  @ApiProperty({
+    description: 'handOverToHumanMessage for the bot',
+    required: false,
+  })
+  handOverToHumanMessage?: string;
 
   @ApiProperty({ description: 'Date when the bot was created' })
   createdAt: Date;
@@ -122,11 +125,11 @@ export class CreateBotDto implements Partial<BotInterface> {
   logo?: string;
 
   @ApiPropertyOptional({
-    description: 'The system prompt for the bot',
+    description: 'The handOverToHumanMessage prompt for the bot',
     example: 'You are a helpful customer support assistant.',
   })
   @IsString({ message: 'validation.isString' })
-  systemPrompt: string;
+  handOverToHumanMessage: string;
 
   @ApiProperty({
     description: 'The status of the bot (active or inactive)',
@@ -233,12 +236,12 @@ export class UpdateBotDto implements Partial<BotInterface> {
   logo?: string;
 
   @ApiPropertyOptional({
-    description: 'The system prompt for the bot',
+    description: 'The handOverToHumanMessage  for the bot',
     example: 'You are a helpful customer support assistant.',
   })
   @IsString({ message: 'validation.isString' })
   @IsOptional()
-  systemPrompt?: string;
+  handOverToHumanMessage?: string;
 
   @ApiPropertyOptional({
     description: 'The status of the bot (active or inactive)',

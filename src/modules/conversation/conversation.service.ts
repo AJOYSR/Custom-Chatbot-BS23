@@ -76,7 +76,7 @@ export class ConversationService {
       if (conversation) {
         const botMessage = await this.prepareBotResponse(
           data.message.content,
-          conversation.botId.toString(),
+          conversation.botId?._id.toString(),
           conversation._id,
         );
 
@@ -138,9 +138,10 @@ export class ConversationService {
       // Add bot response
       const botMessage = await this.prepareBotResponse(
         data.message.content,
-        conversation.botId.toString(),
+        conversation.botId?._id.toString(),
         conversation._id ?? id,
       );
+      console.log('🚀 ~ ConversationService ~ botMessage:', botMessage);
 
       const botMessageUpdate =
         await this.conversationRepository.addMessageToConversation(
@@ -227,6 +228,7 @@ export class ConversationService {
       botId: botId,
       limit: 3,
     });
+    console.log('🚀 231~ ConversationService ~ botId:', botId);
 
     if (searchResults.data.length === 0) {
       const botDetails = await this.botRepo.findBotById(botId);

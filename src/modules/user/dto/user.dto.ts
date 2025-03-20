@@ -17,12 +17,21 @@ import { PaginationQueryDto } from 'src/modules/pagination/types';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'User name',
-    example: 'John Smith',
+    description: 'User first name',
+    example: 'John',
   })
   @IsString({ message: 'validation.isString' })
   @IsNotEmpty({ message: 'validation.notEmpty' })
-  name: string;
+  firstName: string;
+
+  @ApiProperty({
+    description: 'User last name',
+    example: ' Smith',
+    required: false,
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  lastName?: string;
 
   @ApiProperty({
     description: 'User email address',
@@ -65,13 +74,21 @@ export class CreateUserDto {
 
 export class UpdateUserDto {
   @ApiProperty({
-    description: 'User name',
-    example: 'John Smith',
+    description: 'User first name',
+    example: 'John',
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  firstName: string;
+
+  @ApiProperty({
+    description: 'User last name',
+    example: ' Smith',
     required: false,
   })
   @IsString({ message: 'validation.isString' })
-  @IsOptional()
-  name?: string;
+  @IsNotEmpty({ message: 'validation.notEmpty' })
+  lastName?: string;
 
   @ApiProperty({
     description: 'User email address',
@@ -158,10 +175,16 @@ export class UserResponseDto {
   _id: string;
 
   @ApiProperty({
-    description: 'User name',
-    example: 'John Smith',
+    description: 'User first name',
+    example: 'John',
   })
-  name: string;
+  firstName: string;
+
+  @ApiProperty({
+    description: 'User last name',
+    example: ' Smith',
+  })
+  lastName?: string;
 
   @ApiProperty({
     description: 'User email address',

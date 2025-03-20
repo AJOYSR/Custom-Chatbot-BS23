@@ -59,20 +59,6 @@ export class UserRepository {
     }
   }
 
-  private buildUserQuery(
-    originalQuery: Record<string, any>,
-    userWithRoleId?: any[],
-  ): Record<string, any> {
-    if (userWithRoleId.length === 0) return {};
-
-    const userIds = userWithRoleId.map((userRole) => userRole.userId);
-
-    return {
-      ...originalQuery,
-      _id: { $in: userIds },
-    };
-  }
-
   /**
    * Retrieves the total count of users based on the provided query conditions.
    *
@@ -83,10 +69,8 @@ export class UserRepository {
 
   async totalUsersCount(query: Record<string, any>): Promise<number> {
     try {
-      const modifiedQuery = this.buildUserQuery(query);
-
       // Return the count of users matching the modified query
-      return await UserModel.countDocuments(modifiedQuery);
+      return await UserModel.countDocuments(query);
     } catch (err) {
       console.log(err);
       return null;

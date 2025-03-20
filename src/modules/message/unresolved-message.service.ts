@@ -12,6 +12,7 @@ import { UnsolvedErrorMessages } from 'src/entities/messages.entity';
 import { PaginationQuery } from 'src/entities/common.entity';
 import { generateSearchQuery } from 'src/helper/utils';
 import { PaginationService } from '../pagination/pagination.service';
+import { toObjectId } from 'src/utils';
 
 @Injectable()
 export class UnresolvedQueryService {
@@ -25,9 +26,12 @@ export class UnresolvedQueryService {
   async create(
     createUnresolvedQueryDto: CreateUnresolvedQueryDto,
   ): Promise<UnresolvedQueryResponseDto> {
-    const query = await this.unresolvedQueryRep.create(
-      createUnresolvedQueryDto,
-    );
+    const { conversationId, botId } = createUnresolvedQueryDto;
+    const query = await this.unresolvedQueryRep.create({
+      ...createUnresolvedQueryDto,
+      conversationId: toObjectId(conversationId),
+      botId: toObjectId(botId),
+    });
     return this.response.success(query);
   }
 
@@ -56,7 +60,7 @@ export class UnresolvedQueryService {
 
   // Get a list of unresolved queries with pagination
   async getAll(
-    condition: { q: string },
+    condition: { q: string; botId?: string },
     pagination: PaginationQuery,
   ): Promise<GetUnresolvedQueryListResponseDto> {
     const query = generateSearchQuery(condition);

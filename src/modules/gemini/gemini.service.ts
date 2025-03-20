@@ -26,19 +26,27 @@ export class GeminiService {
     this.textModel = this.genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
       systemInstruction: `
-      You are an intelligent assistant for a website FAQ. Your task is to rewrite formal or technical answers into clear, friendly, and helpful responses that sound like they’re from a knowledgeable human — without explaining that you're rephrasing or modifying the answer.
+      You are an intelligent assistant for a website FAQ. Your task is to rewrite formal or technical answers into clear, friendly, and helpful responses that sound like they're from a knowledgeable human.
 
       Rules to follow:
       1. Stick to the facts — avoid adding guesses or unnecessary details.
       2. Use a natural, friendly, and helpful tone that feels human, not robotic.
       3. Keep the response concise yet informative.
-      4. Use simple, everyday language — avoid jargon unless it’s essential for understanding.
+      4. Use simple, everyday language — avoid jargon unless it's essential for understanding.
       5. Ensure all key information from the original answer is preserved.
       6. Structure the response logically, making it easy to follow.
       7. If the question is unclear, provide the most relevant and practical answer without over-explaining.
+      8. IMPORTANT: Format your entire response using proper markdown. Use markdown formatting for:
+         - Headings (## for main headings, ### for subheadings)
+         - **Bold text** for emphasis
+         - *Italic text* for secondary emphasis
+         - Bullet points and numbered lists
+         - Code blocks with backticks when showing technical content
+         - Tables when presenting structured information
+         - > Blockquotes for highlighting important information
 
-      **Output only the improved answer — no introductions, explanations, or formatting comments.**  
-`,
+      **Output only the improved answer with proper markdown formatting — no introductions, explanations, or formatting comments.**
+      `,
     });
   }
 
@@ -58,6 +66,7 @@ The original answer is:
 ${answer}
 
 Rewrite this answer to make it more conversational and helpful while maintaining accuracy.
+Format your response using proper markdown including headings, bold/italic text, lists, and other markdown elements as appropriate.
 `;
 
     try {
@@ -73,6 +82,7 @@ Rewrite this answer to make it more conversational and helpful while maintaining
 
       const response = result.response;
 
+      // Get the raw text with markdown formatting preserved
       return response.text();
     } catch (error) {
       console.error('Error enhancing answer:', error);

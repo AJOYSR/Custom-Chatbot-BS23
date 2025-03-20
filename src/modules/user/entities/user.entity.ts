@@ -6,7 +6,8 @@ export interface UserInterface {
   password: string;
   role: any;
   phone?: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   permissions: PERMISSIONS[];
   isActive: boolean;
   isEmailVerified: boolean;

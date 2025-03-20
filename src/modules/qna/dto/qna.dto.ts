@@ -133,4 +133,11 @@ export class GetAlQnaQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString({ message: 'validation.isString' })
   q: string;
+
+  @ApiProperty({ required: true })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({
+    message: 'validation.notEmpty',
+  })
+  botId: string;
 }

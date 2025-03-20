@@ -7,12 +7,13 @@ const UnresolvedQuerySchema = new Schema<UnresolvedQueryInterface>(
     botId: {
       type: String,
       required: true,
-      ref: 'conversation',
+      ref: 'bot',
     },
 
     conversationId: {
       type: String,
       required: true,
+      ref: 'conversation',
     },
 
     query: {
