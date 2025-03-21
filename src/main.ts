@@ -9,13 +9,20 @@ import { I18nService } from 'nestjs-i18n';
 import { AllExceptionsFilter } from './internal/exception/all-exception-filter';
 import { coreConfig } from './config/core';
 import { ValidationPipe } from './decorators/validation.pipe';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as path from 'path';
 
 async function bootstrap() {
   // Connect to the database
   await connectToDatabase();
 
   // Create a new Nest application instance
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Serve static files
+  app.useStaticAssets(path.join(__dirname, '..', 'public'), {
+    prefix: '/public',
+  });
 
   // Set the global prefix for all routes
   app.setGlobalPrefix(coreConfig.apiPrefix);
