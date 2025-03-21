@@ -77,7 +77,6 @@ export class QnARepository {
   }
 
   async findVectorById(id: string) {
-    console.log('🚀 ~ QnARepository ~ findVectorById ~ id:', id);
     const client = await this.dbService.getClient();
     try {
       const result = await client.query(

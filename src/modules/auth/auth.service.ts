@@ -184,7 +184,6 @@ export class AuthService {
    */
   async forgotPassword(email: string): Promise<{ message: string }> {
     const user = await this.userRepo.findUser({ email });
-    console.log('🚀 ~ AuthService ~ forgotPassword ~ user:', user);
 
     if (!user)
       throw new HttpException(

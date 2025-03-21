@@ -42,7 +42,6 @@ export class BotService {
   }
 
   async getBotById(botId: string): Promise<BotInterface> {
-    console.log('🚀 ~ BotService ~ getBotById ~ botId:', botId);
     const bot = await this.botRepository.findBotById(botId);
     if (!bot)
       throw new HttpException(
