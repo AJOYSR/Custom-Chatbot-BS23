@@ -5,8 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -54,7 +54,17 @@ export class UserController {
   ): Promise<IResponse<UserInterface>> {
     return this.userService.addUser(user, createUserDto);
   }
-
+  @Get('/roles')
+  @HttpCode(HttpStatus.OK)
+  // @PermissionRequired(PERMISSIONS.DELETE_ADMIN)
+  @ApiOperation({ summary: 'Get all roles' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns list of roles',
+  })
+  async getAllRoles(@UserInfo() user: JwtPayload) {
+    return await this.userService.getRoles(user);
+  }
   @Get()
   @HttpCode(HttpStatus.OK)
   @PermissionRequired(PERMISSIONS.VIEW_ADMIN_LIST)
@@ -95,7 +105,7 @@ export class UserController {
     return this.userService.getUserInfo(user, id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @PermissionRequired(PERMISSIONS.UPDATE_ADMIN_STATUS)
   @ApiOperation({ summary: 'Update user' })

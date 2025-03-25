@@ -60,7 +60,6 @@ export function generateSearchQuery(condition: {
   q?: string;
 }): object {
   const { botId, q } = condition;
-  console.log('🚀 ~ condition:', condition);
   const query: Record<string, any> = {};
 
   if (q !== undefined && q !== '') {

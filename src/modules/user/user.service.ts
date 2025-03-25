@@ -126,7 +126,6 @@ export class UserService {
       },
       pagination,
     );
-    console.log('🚀 ~ UserService ~ total:', total);
 
     const users: UserInterface[] = [];
     for (const user of data as UserInterface[]) {
@@ -186,18 +185,35 @@ export class UserService {
   ): Promise<IResponse<UserInterface>> {
     try {
       const { email, role } = data;
-      // Validates the addition of a new user based on various criteria, such as existing email and user permissions.
+
+      const newRole = await this.userRepo.findRole({ name: role });
+      // Validates the user role and checks email
       const [_, updatedUserOldInfo] = await Promise.all([
-        await this.validateUserRole(userInfo, updatedUserId, email, role),
+        await this.validateUserRole(
+          userInfo,
+          updatedUserId,
+          email,
+          newRole?._id,
+        ),
         await this.userRepo.findUserById(updatedUserId),
       ]);
+
       if (!updatedUserOldInfo) {
         throw new Error(UserErrorMessages.COULD_NOT_GET_USER);
       }
 
+      if (!newRole) {
+        throw new Error(UserErrorMessages.INVALID_ROLE_ID);
+      }
+
+      const newData = {
+        ...data,
+        role: newRole._id, // Use role document's _id
+      };
+
       const updatedUser = await this.userRepo.updateUser(
         { _id: updatedUserId },
-        data,
+        newData,
       );
       if (!updatedUser) throw new Error();
 
@@ -205,6 +221,24 @@ export class UserService {
     } catch (error) {
       throw new HttpException(
         { message: error.message || UserErrorMessages.COULD_NOT_UPDATE_USER },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async getRoles(user: JwtPayload) {
+    try {
+      // if (user.roleId?.name !== ROLE.SUPER_ADMIN) {
+      //   throw new HttpException(
+      //     { message: UserErrorMessages.FORBIDDEN_PERMISSION },
+      //     HttpStatus.FORBIDDEN,
+      //   );
+      // }
+      const roles = await this.userRepo.getRoles({});
+      return this.response.success(roles);
+    } catch (error) {
+      throw new HttpException(
+        { message: error.message || HttpStatus.INTERNAL_SERVER_ERROR },
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -285,21 +319,6 @@ export class UserService {
           roleId && this.userRepo.findRoleById(roleId),
           this.userRepo.findRoleById(userInfo?.roleId?._id),
         ]);
-
-      if (
-        (roleId && (!targetRole || targetRole.name === ROLE.CUSTOMER)) ||
-        user
-      ) {
-        throw new HttpException(
-          {
-            message:
-              roleId && (!targetRole || targetRole.name === ROLE.CUSTOMER)
-                ? UserErrorMessages.INVALID_ROLE_ID
-                : UserErrorMessages.EMAIL_ALREADY_EXISTS,
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
 
       if (roleId && targetRole?.name) {
         // Checks whether a user with a certain role can manage a user with a certain target role.

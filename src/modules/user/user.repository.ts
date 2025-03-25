@@ -47,6 +47,12 @@ export class UserRepository {
       // Find users matching the modified query
       const users = await UserModel.find(query)
         .select('-password -isDelete -createdAt -updatedAt')
+        .populate([
+          {
+            path: 'role',
+            select: 'name _id',
+          },
+        ])
         .sort({ createdAt: -1 })
         .skip(pagination.skip)
         .limit(pagination.limit)
@@ -138,7 +144,15 @@ export class UserRepository {
    */
   async findUser(query: Record<string, any>): Promise<UserInterface | null> {
     try {
-      return await UserModel.findOne(query).select('-password').lean();
+      return await UserModel.findOne(query)
+        .populate([
+          {
+            path: 'role',
+            select: 'name _id',
+          },
+        ])
+        .select('-password')
+        .lean();
     } catch (error: any) {
       console.log(error);
       return null;
@@ -153,7 +167,13 @@ export class UserRepository {
   async findUserById(id: string): Promise<UserInterface | null> {
     try {
       const fetchedUser = await UserModel.findById(id)
-        .select('-password -isDelete -createdAt -updatedAt')
+        .populate([
+          {
+            path: 'role',
+            select: '_id name',
+          },
+        ])
+        .select('-password -isDelete -updatedAt')
         .lean();
 
       return fetchedUser;
