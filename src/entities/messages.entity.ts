@@ -92,3 +92,13 @@ export const enum QnaErrorMessages {
 export const enum QnaSuccessMessages {
   QNA_CREATED_SUCCESSFULLY = 'message.qna.success.successFullyCreated',
 }
+
+export const enum UserBotsErrorMessages {
+  USER_BOTS_ALREADY_EXISTS = 'message.userBots.errors.alreadyExists',
+  COULD_NOT_CREATED_USER_BOTS = 'message.userBots.errors.couldNotCreateUserBot',
+  COULD_NOT_UPDATED_USER_BOTS = 'message.userBots.errors.couldNotUpdatedUserBot',
+  INVALID_USER_BOTS_ID = 'message.userBots.errors.invalidUserBotId',
+}
+export const enum UserBotsSuccessMessages {
+  USER_BOTS_CREATED_SUCCESSFULLY = 'message.bot.errors.botCreationSuccessful',
+}

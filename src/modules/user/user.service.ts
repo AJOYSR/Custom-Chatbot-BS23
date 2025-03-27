@@ -11,8 +11,10 @@ import { UserRepository } from './user.repository';
 import { PaginationService } from '../pagination/pagination.service';
 import { JwtPayload } from 'src/entities/auth.entity';
 import { UserInterface } from './entities/user.entity';
-import { UserErrorMessages } from 'src/entities/messages.entity';
-import { CreateUserRequest } from 'src/entities/user.entity';
+import {
+  BotErrorMessages,
+  UserErrorMessages,
+} from 'src/entities/messages.entity';
 import { ROLE } from 'src/entities/enum.entity';
 import { generateStrongPassword } from 'src/helper/utils';
 import { authConfig } from 'src/config/auth';
@@ -20,6 +22,8 @@ import { Role } from 'src/entities/role-permission.entity';
 import { MailService } from 'src/helper/email';
 import { PaginationQueryDto } from '../pagination/types';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { BotRepository } from '../bot/bot.repository';
+import { UserBotsRepository } from '../user-bots/user-bots.repository';
 
 @Injectable()
 export class UserService {
@@ -28,6 +32,8 @@ export class UserService {
     private readonly mailService: MailService,
     private readonly response: APIResponse,
     private readonly pagination: PaginationService,
+    private readonly botRepo: BotRepository,
+    private readonly userBotRepo: UserBotsRepository,
   ) {}
 
   /**
@@ -37,47 +43,56 @@ export class UserService {
    * @returns A response object containing either the newly added user or an error message.
    * @throws HttpException with status BAD_REQUEST if the request is invalid or an error occurs during user creation.
    */
-  async addUser(
-    userInfo: JwtPayload,
-    data: CreateUserDto,
-  ): Promise<IResponse<UserInterface>> {
-    try {
-      const { email, role } = data;
+  async addUser(userInfo: JwtPayload, data: CreateUserDto): Promise<any> {
+    const { email, role, botId } = data;
 
-      // Validate user addition and gun range (if applicable)
-      const [newRoleCreated] = await Promise.all([
-        this.validateUserAddition(userInfo, email, role),
+    try {
+      // Validate creator and target roles
+      const [creatorRole, targetRole] = await Promise.all([
+        this.userRepo.findRole({ _id: userInfo?.roleId?._id }),
+        this.userRepo.findRole({ name: role as ROLE }),
       ]);
 
-      if (newRoleCreated) {
-        return this.response.success(newRoleCreated);
-      }
-
-      if (userInfo.roleId?.name === ROLE.SUPER_ADMIN) {
+      // Ensure creator is a super admin
+      if (creatorRole?.name !== ROLE.SUPER_ADMIN) {
         throw new Error(UserErrorMessages.FORBIDDEN_PERMISSION);
       }
 
-      // Generate a temporary password and hash it
+      // Validate user and bot
+      await this.validateUserAddition(userInfo, email, targetRole?._id);
+
+      // Validate bot
+      const validBot = botId && (await this.botRepo.findBotById(botId));
+      if (!validBot) throw new Error(BotErrorMessages.INVALID_BOT_ID);
+
+      // Generate and hash temporary password
       const temporaryPassword = generateStrongPassword();
-      // hash the random password
       const hashedPassword = await bcrypt.hash(
         temporaryPassword,
         authConfig.salt,
       );
 
-      // Create the user
-      const addedUser = await this.userRepo.createUser({
+      // Prepare user data
+      const newUserData = {
         ...data,
+        role: targetRole._id,
         password: hashedPassword,
         isEmailVerified: true,
-      });
+      };
 
+      // Create user and user-bot relationship
+      const addedUser = await this.userRepo.createUser(newUserData);
       if (!addedUser) {
         throw new Error(UserErrorMessages.COULD_NOT_CREATE_USER);
       }
 
-      // Send the temporary password email
-      this.sendTemporaryPasswordEmail(data.email, temporaryPassword);
+      await this.userBotRepo.create({
+        userId: addedUser._id,
+        botId,
+      });
+
+      // Send temporary password email
+      this.sendTemporaryPasswordEmail(email, temporaryPassword);
 
       return this.response.success(addedUser);
     } catch (error) {
@@ -272,29 +287,31 @@ export class UserService {
     userInfo: JwtPayload,
     email: string,
     roleId: string,
-  ): Promise<any> {
+  ): Promise<void> {
     try {
-      const [creatorRole, user, targetRole] = await Promise.all([
-        this.userRepo.findRoleById(userInfo?.roleId?._id),
+      // Check if user exists and role is valid
+      const [existingUser, targetRole] = await Promise.all([
         this.userRepo.findUser({ email }),
         this.userRepo.findRoleById(roleId),
       ]);
 
+      // Validate target role
       if (!targetRole) {
         throw new Error(UserErrorMessages.INVALID_ROLE_ID);
       }
 
-      // If the user is already exists
-      if (user) {
+      // Check if user already exists
+      if (existingUser) {
         throw new HttpException(
-          {
-            message: UserErrorMessages.EMAIL_ALREADY_EXISTS,
-          },
+          { message: UserErrorMessages.EMAIL_ALREADY_EXISTS },
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      // Checks whether a user with a certain role can manage a user with a certain target role.
+      // Check user permissions
+      const creatorRole = await this.userRepo.findRoleById(
+        userInfo?.roleId?._id,
+      );
       this.checkUserPermission(creatorRole?.name, targetRole.name);
     } catch (error) {
       throw new HttpException(

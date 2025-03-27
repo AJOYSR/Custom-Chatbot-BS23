@@ -28,11 +28,11 @@ export class QnARepository {
     query: Record<string, any>,
     pagination: { skip: number; limit: number },
   ) {
+    console.log('🚀 ~ QnARepository ~ query:', query);
     const client = await this.dbService.getClient();
     try {
       const { skip, limit } = pagination;
       const { botId } = query;
-      console.log('🚀 ~ QnARepository ~ botId:', botId);
 
       let sqlQuery =
         'SELECT id, question, answer, "botId", "createdAt", "updatedAt" FROM question_n_answers';
@@ -67,11 +67,15 @@ export class QnARepository {
 
       if (botId) {
         sqlQuery += ' WHERE "botId" = $1';
-        queryParams.push(botId);
+        queryParams.push(botId.toString());
       }
 
       const result = await client.query(sqlQuery, queryParams);
+
       return parseInt(result.rows[0].count);
+    } catch (error) {
+      console.error('Error in countVectors:', error);
+      throw error;
     } finally {
       client.release();
     }

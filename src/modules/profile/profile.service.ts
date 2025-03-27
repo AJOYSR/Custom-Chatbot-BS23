@@ -21,6 +21,7 @@ import { UserInterface } from 'src/modules/user/entities/user.entity';
 import { UserRepository } from 'src/modules/user/user.repository';
 import { UserService } from 'src/modules/user/user.service';
 import { getRoleLabel } from 'src/utils';
+import { UserBotsRepository } from '../user-bots/user-bots.repository';
 
 @Injectable()
 export class ProfileService {
@@ -28,7 +29,8 @@ export class ProfileService {
     private userRepo: UserRepository,
     private readonly response: APIResponse,
     private readonly i18n: I18nService,
-    private userService: UserService,
+    private readonly userService: UserService,
+    private readonly userBotsRepo: UserBotsRepository,
   ) {}
 
   /**
@@ -62,6 +64,9 @@ export class ProfileService {
     (userInfo as any).permissions = await this.userRepo.getPermissionsArray({
       roleId: user?.roleId._id,
     });
+    const listOfUserBots = await this.userBotsRepo.findUserBots(user._id);
+
+    userInfo.botList = listOfUserBots.map((bot) => bot.botId);
 
     return this.response.success(userInfo);
   }
