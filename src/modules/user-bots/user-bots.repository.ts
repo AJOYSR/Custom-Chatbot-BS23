@@ -53,7 +53,7 @@ export class UserBotsRepository {
   async findUserBots(userId: string): Promise<UserBots[]> {
     try {
       return await UserBotsModel.find({ userId, isActive: true }).select(
-        '-cratedAt updatedAT',
+        '-createdAt -updatedAt',
       );
     } catch (error) {
       console.log('🚀 ~ UserBotsRepository ~ findUserBots ~ error:', error);
