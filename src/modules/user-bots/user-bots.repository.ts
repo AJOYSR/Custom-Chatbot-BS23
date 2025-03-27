@@ -6,10 +6,6 @@ import { UserBots } from './entities/user-bots.entity';
 @Injectable()
 export class UserBotsRepository {
   async create(createUserBotDto: CreateUserBotDto): Promise<UserBots> {
-    console.log(
-      '🚀 ~ UserBotsRepository ~ create ~ createUserBotDto:',
-      createUserBotDto,
-    );
     try {
       return await UserBotsModel.create(createUserBotDto);
     } catch (error) {
@@ -56,7 +52,9 @@ export class UserBotsRepository {
 
   async findUserBots(userId: string): Promise<UserBots[]> {
     try {
-      return await UserBotsModel.find({ userId, isActive: true });
+      return await UserBotsModel.find({ userId, isActive: true }).select(
+        '-cratedAt updatedAT',
+      );
     } catch (error) {
       console.log('🚀 ~ UserBotsRepository ~ findUserBots ~ error:', error);
       throw error;
