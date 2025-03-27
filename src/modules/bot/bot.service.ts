@@ -23,6 +23,8 @@ import {
 } from 'src/entities/messages.entity';
 import { ROLE } from 'src/entities/enum.entity';
 import { startSession } from 'mongoose';
+import { UserBotsRepository } from '../user-bots/user-bots.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Injectable()
 export class BotService {
@@ -30,6 +32,8 @@ export class BotService {
     private readonly botRepository: BotRepository,
     private readonly apiResponse: APIResponse,
     private readonly pagination: PaginationService,
+    private readonly userBotsRepo: UserBotsRepository,
+    private readonly userRepo: UserRepository,
   ) {}
 
   async createBot(
@@ -74,12 +78,28 @@ export class BotService {
     logo?: Express.Multer.File,
     icon?: Express.Multer.File,
   ): Promise<IResponse<BotInterface>> {
-    const bot = await this.botRepository.findBotById(botId);
+    // Check if the bot exists
+    const [creatorRole, bot] = await Promise.all([
+      await this.userRepo.findRole({ _id: user?.roleId?._id }),
+      await this.botRepository.findBotById(botId),
+    ]);
+    console.log('🚀 ~ BotService ~ creatorRole:', creatorRole);
+
     if (!bot)
       throw new HttpException(
         { message: BotErrorMessages.INVALID_BOT_ID },
         HttpStatus.BAD_REQUEST,
       );
+
+    const isOwner = await this.userBotsRepo.findByUserAndBot(user._id, botId);
+
+    // Check if the creatorRole is CUSTOMER or if the user is not the owner
+    if (!isOwner && creatorRole.name !== ROLE.SUPER_ADMIN) {
+      throw new HttpException(
+        { message: UserErrorMessages.FORBIDDEN_PERMISSION },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const updatedBot = await this.botRepository.update(botId, data);
 

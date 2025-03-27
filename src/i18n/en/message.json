@@ -97,6 +97,15 @@
       "couldNotDeletedQnA": "Failed to deleted the QnA",
       "couldNotCreateQnA": "Failed to create a QnA"
     }
+  },
+  "userBots":{ 
+    "errors": {
+      "invalidUserBotId": "Invalid UserBot ID",
+      "couldNotUpdatedUserBot": "Failed to update a UserBot",
+      "couldNotDeletedUserBot": "Failed to deleted the UserBot",
+      "couldNotCreateUserBot": "Failed to create a UserBot",
+      "alreadyExists": "This user already exists in this botCreationSuccessful"
+    }
   }
 
 }
