@@ -2,6 +2,8 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import * as dotenv from 'dotenv';
+import { questionGeneratorPrompt, textGeneratorPrompt } from 'src/prompts';
+import { extractJsonFromText } from 'src/utils';
 
 dotenv.config();
 
@@ -10,6 +12,7 @@ export class GeminiService {
   private genAI: GoogleGenerativeAI;
   private embeddingModel: any;
   private textModel: any;
+  private questionGeneratorModel: any;
 
   constructor() {
     // Initialize Google Generative AI with your API key
@@ -22,31 +25,16 @@ export class GeminiService {
       model: 'text-embedding-004',
     });
 
+    // Initialize the question generation model
+    this.questionGeneratorModel = this.genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      systemInstruction: questionGeneratorPrompt,
+    });
+
     // Initialize the text generation model
     this.textModel = this.genAI.getGenerativeModel({
       model: 'gemini-2.0-flash',
-      systemInstruction: `
-      You are an intelligent assistant for a website FAQ. Your task is to rewrite formal or technical answers into clear, friendly, and helpful responses that sound like they're from a knowledgeable human.
-
-      Rules to follow:
-      1. Stick to the facts — avoid adding guesses or unnecessary details.
-      2. Use a natural, friendly, and helpful tone that feels human, not robotic.
-      3. Keep the response concise yet informative.
-      4. Use simple, everyday language — avoid jargon unless it's essential for understanding.
-      5. Ensure all key information from the original answer is preserved.
-      6. Structure the response logically, making it easy to follow.
-      7. If the question is unclear, provide the most relevant and practical answer without over-explaining.
-      8. IMPORTANT: Format your entire response using proper markdown. Use markdown formatting for:
-         - Headings (## for main headings, ### for subheadings)
-         - **Bold text** for emphasis
-         - *Italic text* for secondary emphasis
-         - Bullet points and numbered lists
-         - Code blocks with backticks when showing technical content
-         - Tables when presenting structured information
-         - > Blockquotes for highlighting important information
-
-      **Output only the improved answer with proper markdown formatting — no introductions, explanations, or formatting comments.**
-      `,
+      systemInstruction: textGeneratorPrompt,
     });
   }
 
@@ -111,6 +99,35 @@ Format your response using proper markdown including headings, bold/italic text,
     } catch (error) {
       console.error('Error generating embeddings:', error);
       throw new Error('Failed to generate embeddings');
+    }
+  }
+  /**
+   * Generates similar questions from a given question
+   * @param question - The question to generate similar questions from
+   * @returns Array of similar questions
+   *
+   * Note: This is a simple implementation for generating similar questions. In a real-world scenario, you might want to use a more sophisticated method like semantic search or transformer models.
+   */
+
+  async generateSimilarQuestions(
+    question: string,
+  ): Promise<{ questions: string[] }> {
+    try {
+      const result = await this.questionGeneratorModel.generateContent({
+        contents: [{ role: 'user', parts: [{ text: question }] }],
+        generationConfig: {
+          temperature: 0.2,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 150,
+        },
+      });
+
+      const response = result.response;
+      return extractJsonFromText(response.text());
+    } catch (error) {
+      console.error('Error generating similar questions:', error);
+      throw new Error('Failed to generate similar questions');
     }
   }
 

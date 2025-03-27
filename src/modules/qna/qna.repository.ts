@@ -32,7 +32,6 @@ export class QnARepository {
     try {
       const { skip, limit } = pagination;
       const { botId } = query;
-      console.log('🚀 ~ QnARepository ~ botId:', botId);
 
       let sqlQuery =
         'SELECT id, question, answer, "botId", "createdAt", "updatedAt" FROM question_n_answers';
@@ -67,7 +66,7 @@ export class QnARepository {
 
       if (botId) {
         sqlQuery += ' WHERE "botId" = $1';
-        queryParams.push(botId);
+        queryParams.push(botId?.toString());
       }
 
       const result = await client.query(sqlQuery, queryParams);
@@ -78,7 +77,6 @@ export class QnARepository {
   }
 
   async findVectorById(id: string) {
-    console.log('🚀 ~ QnARepository ~ findVectorById ~ id:', id);
     const client = await this.dbService.getClient();
     try {
       const result = await client.query(

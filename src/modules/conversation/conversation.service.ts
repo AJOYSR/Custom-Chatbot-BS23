@@ -141,7 +141,6 @@ export class ConversationService {
         conversation.botId?._id.toString(),
         conversation._id ?? id,
       );
-      console.log('🚀 ~ ConversationService ~ botMessage:', botMessage);
 
       const botMessageUpdate =
         await this.conversationRepository.addMessageToConversation(
@@ -228,7 +227,6 @@ export class ConversationService {
       botId: botId,
       limit: 3,
     });
-    console.log('🚀 231~ ConversationService ~ botId:', botId);
 
     if (searchResults.data.length === 0) {
       const botDetails = await this.botRepo.findBotById(botId);
