@@ -212,8 +212,14 @@ class Chatbot {
             message.content,
             message.role === 'user' ? 'user' : 'bot',
             message.timestamp,
+            false, // Don't scroll for each message
           );
         }
+      });
+
+      // Scroll to bottom after all messages are loaded
+      requestAnimationFrame(() => {
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
       });
     } catch (error) {
       console.error('Error loading previous messages:', error);
@@ -495,14 +501,31 @@ class Chatbot {
     this.isLoading = true;
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message bot-message loading-message';
-    loadingDiv.innerHTML = `
-      <div class="avatar bot-avatar">🤖</div>
-      <div class="message-content">
-        <div class="typing-indicator">
-          <span></span><span></span><span></span>
-        </div>
+
+    // Create message row for proper alignment
+    const messageRow = document.createElement('div');
+    messageRow.className = 'message-row';
+
+    // Add bot avatar
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar bot-avatar';
+    avatar.innerHTML = '🤖';
+    avatar.style.backgroundColor = this.botColor;
+
+    // Create message content with typing indicator
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content loading-content';
+    messageContent.innerHTML = `
+      <div class="typing-indicator">
+        <span></span><span></span><span></span>
       </div>
     `;
+
+    // Assemble message
+    messageRow.appendChild(avatar);
+    messageRow.appendChild(messageContent);
+    loadingDiv.appendChild(messageRow);
+
     this.chatMessages.appendChild(loadingDiv);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
   }
@@ -524,7 +547,7 @@ class Chatbot {
     }).format(new Date(date));
   }
 
-  addMessage(content, type, timestamp = new Date()) {
+  addMessage(content, type, timestamp = new Date(), scrollToBottom = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}-message`;
 
@@ -572,7 +595,11 @@ class Chatbot {
     messageDiv.appendChild(messageRow);
 
     this.chatMessages.appendChild(messageDiv);
-    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+
+    // Only scroll if scrollToBottom is true
+    if (scrollToBottom) {
+      this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+    }
   }
 }
 
