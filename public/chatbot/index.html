@@ -33,6 +33,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative; 
         }
         #bot-avatar {
             width: 35px;
@@ -55,6 +56,7 @@
             padding: 20px;
             background: #f8f9fa;
         }
+    
         .message {
             margin: 10px 0;
             display: flex;
@@ -385,6 +387,98 @@
                 transform: translateY(-4px);
             }
         }
+
+        /* Add close button styles */
+        #chat-close-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+
+        #chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Message timestamp styles */
+        .message-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+            padding-left: 50px;
+        }
+        
+        .user-message .message-timestamp {
+            text-align: right;
+            padding-right: 50px;
+            padding-left: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .message-timestamp {
+                font-size: 10px;
+            }
+        }
+
+        /* Updated Message timestamp styles */
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 16px 0;
+        }
+
+        .message-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin: 0 0 2px 0;
+        }
+
+        .message-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .user-message .message-row {
+            flex-direction: row-reverse;
+        }
+
+        .user-message .message-timestamp {
+            color: rgba(0, 0, 0, 0.5);
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .message-wrapper {
+                max-width: 85%;
+            }
+            .message-timestamp {
+                font-size: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -394,6 +488,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/4712/4712009.png" alt="Bot">
             </div>
             <span id="bot-name">AI Assistant</span>
+            <button id="chat-close-btn">×</button>
         </div>
         <div id="chat-messages"></div>
         <div id="chat-input">
@@ -432,6 +527,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   }, true); // Use capture phase to intercept before other handlers
+});
+
+// Add close button handler
+document.getElementById('chat-close-btn').addEventListener('click', function() {
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'CLOSE_CHAT' }, '*');
+    }
 });
 </script>
 </body>

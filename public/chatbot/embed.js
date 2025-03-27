@@ -158,11 +158,14 @@
         closeButton.style.display = 'none';
       });
 
-      // Listen for color updates from iframe
+      // Listen for messages from iframe
       window.addEventListener('message', (event) => {
         if (event.data.type === 'BOT_COLOR') {
           button.style.backgroundColor = event.data.color;
           container.style.borderColor = event.data.color;
+        } else if (event.data.type === 'CLOSE_CHAT') {
+          container.style.display = 'none';
+          closeButton.style.display = 'none';
         }
       });
     },

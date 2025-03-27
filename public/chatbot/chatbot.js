@@ -1,5 +1,10 @@
 class Chatbot {
   constructor(botId) {
+    // Move requestQueue initialization to top
+    this.requestQueue = Promise.resolve();
+    this.retryAttempts = 3;
+    this.retryDelay = 1000;
+
     this.botId = botId;
     this.apiKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2QyOWMzYWEwOTY3MTU0OWRjMmU5YWUiLCJsb2dpblRpbWUiOjE3NDI0NTkwMjU0OTYsInJvbGVJZCI6eyJfaWQiOiI2NWU1YmE1NzNkNzI3MmU1NmVlMjMxMjMifSwiaWF0IjoxNzQyNDU5MDI1LCJleHAiOjE3NDUwNTEwMjV9.uvXuJobZaRMyrZAR9c4VMbIXbXUOXsaa7HiR8UWZqm8';
@@ -10,16 +15,21 @@ class Chatbot {
     this.conversationId = null;
     this.botName = 'AI Assistant'; // Default name until we fetch it
     this.isLoading = false;
-    this.botColor = '#007bff'; // Default color
+    this.botColor = '#578FCA'; // Default color
     this.lastApiCall = 0;
     this.apiCooldown = 1000; // 1 second cooldown between API calls
     this.maxStorageAge = 24 * 60 * 60 * 1000; // 24 hours
-    this.loadBotState();
-    this.loadConversationState();
+    this.loadBotState().then(() => {
+      this.loadConversationState().catch((err) => {
+        console.error('Error loading conversation:', err);
+        this.showBotWelcomeMessage();
+      });
+    });
+
     this.initialize();
   }
 
-  loadBotState() {
+  async loadBotState() {
     try {
       const botState = localStorage.getItem(`bot_state_${this.botId}`);
       if (botState) {
@@ -31,6 +41,8 @@ class Chatbot {
           this.botColor = color;
           document.getElementById('bot-name').textContent = this.botName;
           this.updateThemeColor();
+          // Notify parent about color on state load
+          this.notifyParentAboutColor();
           return true;
         }
       }
@@ -59,21 +71,19 @@ class Chatbot {
   async loadConversationState() {
     try {
       const savedState = localStorage.getItem(`chatbot_${this.botId}`);
-      if (savedState) {
-        const { conversationId, timestamp } = JSON.parse(savedState);
+      if (!savedState) return;
 
-        // Check if conversation is still valid
-        if (Date.now() - timestamp < this.maxStorageAge) {
-          this.conversationId = conversationId;
-          await this.loadPreviousMessages();
-          return;
-        }
+      const { conversationId, timestamp } = JSON.parse(savedState);
+      if (!conversationId || Date.now() - timestamp >= this.maxStorageAge) {
+        this.clearConversationState();
+        return;
       }
-      // Clear expired conversation
-      this.clearConversationState();
+
+      this.conversationId = conversationId;
+      await this.loadPreviousMessages();
     } catch (error) {
-      console.error('Error loading conversation state:', error);
       this.clearConversationState();
+      throw error;
     }
   }
 
@@ -131,40 +141,111 @@ class Chatbot {
     }
   }
 
+  async makeSecureRequest(url, options) {
+    const defaultOptions = {
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    return new Promise((resolve, reject) => {
+      this.requestQueue = this.requestQueue
+        .then(async () => {
+          let lastError;
+          for (let attempt = 0; attempt < this.retryAttempts; attempt++) {
+            try {
+              const response = await fetch(url, {
+                ...defaultOptions,
+                ...options,
+              });
+              if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(
+                  errorData.message || `HTTP error! status: ${response.status}`,
+                );
+              }
+              const data = await response.json();
+              resolve(data);
+              return;
+            } catch (error) {
+              lastError = error;
+              if (attempt < this.retryAttempts - 1) {
+                await new Promise((resolve) =>
+                  setTimeout(resolve, this.retryDelay * (attempt + 1)),
+                );
+              }
+            }
+          }
+          reject(lastError);
+        })
+        .catch(reject);
+    });
+  }
+
   async loadPreviousMessages() {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/conversations/${this.conversationId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to load previous messages');
+      // Validate conversation ID
+      if (
+        !this.conversationId ||
+        !/^[0-9a-fA-F]{24}$/.test(this.conversationId)
+      ) {
+        throw new Error('Invalid conversation ID');
       }
 
-      const data = await response.json();
+      const data = await this.makeSecureRequest(
+        `${this.baseUrl}/conversations/${this.conversationId}`,
+        { method: 'GET' },
+      );
 
-      // Clear existing messages
+      // Validate response data
+      if (!data?.data?.messages || !Array.isArray(data.data.messages)) {
+        throw new Error('Invalid response format');
+      }
+
       this.chatMessages.innerHTML = '';
 
-      // Add all messages in order
+      // Add messages with sanitization
       data.data.messages.forEach((message) => {
-        this.addMessage(
-          message.content,
-          message.role === 'user' ? 'user' : 'bot',
-        );
+        if (this.validateMessage(message)) {
+          this.addMessage(
+            message.content,
+            message.role === 'user' ? 'user' : 'bot',
+            message.timestamp,
+          );
+        }
       });
     } catch (error) {
       console.error('Error loading previous messages:', error);
-      // If failed to load previous messages, clear conversation state
-      localStorage.removeItem(`chatbot_${this.botId}`);
-      this.conversationId = null;
+      this.handleLoadError(error);
+    }
+  }
+
+  validateMessage(message) {
+    return (
+      message &&
+      typeof message.content === 'string' &&
+      ['user', 'bot'].includes(message.role) &&
+      message.content.length <= 10000
+    ); // Reasonable message length limit
+  }
+
+  handleLoadError(error) {
+    if (
+      error.message.includes('Invalid conversation ID') ||
+      error.message.includes('404') ||
+      error.message.includes('400')
+    ) {
+      // Clear invalid conversation state
+      this.clearConversationState();
       this.showBotWelcomeMessage();
+    } else {
+      // Show error message to user
+      this.addMessage(
+        'Unable to load previous messages. Starting new conversation.',
+        'bot',
+      );
+      this.clearConversationState();
     }
   }
 
@@ -213,6 +294,9 @@ class Chatbot {
       document.getElementById('bot-name').textContent = this.botName;
       this.updateThemeColor();
 
+      // Notify parent window immediately about the color
+      this.notifyParentAboutColor();
+
       // Show welcome message
       if (botData.welcomeMessage) {
         this.addMessage(botData.welcomeMessage, 'bot');
@@ -229,6 +313,15 @@ class Chatbot {
         this.updateThemeColor();
       }
       this.addMessage('Hello! How can I help you today?', 'bot');
+    }
+  }
+
+  notifyParentAboutColor() {
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        { type: 'BOT_COLOR', color: this.botColor },
+        '*',
+      );
     }
   }
 
@@ -298,6 +391,8 @@ class Chatbot {
   }
 
   async sendMessage() {
+    if (!this.validateInput()) return;
+
     const message = this.messageInput.value.trim();
     if (!message || this.isLoading) return;
 
@@ -317,12 +412,15 @@ class Chatbot {
     this.showLoadingMessage();
 
     try {
+      // Sanitize message content
+      const sanitizedMessage = DOMPurify.sanitize(message).trim();
+
       const payload = {
         botId: this.botId,
         message: {
-          content: message,
+          content: sanitizedMessage,
           role: 'user',
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
         },
       };
 
@@ -330,23 +428,13 @@ class Chatbot {
         payload.conversationId = this.conversationId;
       }
 
-      const response = await fetch(
+      const data = await this.makeSecureRequest(
         `${this.baseUrl}/conversations${this.conversationId ? '/' + this.conversationId : ''}`,
         {
           method: this.conversationId ? 'PATCH' : 'POST',
-          headers: {
-            Authorization: `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(payload),
         },
       );
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const data = await response.json();
 
       if (!this.conversationId) {
         this.conversationId = data.data._id;
@@ -357,15 +445,50 @@ class Chatbot {
 
       // Remove loading message before showing bot response
       this.removeLoadingMessage();
-      this.addMessage(botMessage.content, 'bot');
+      this.addMessage(botMessage.content, 'bot', botMessage.timestamp);
     } catch (error) {
-      this.removeLoadingMessage();
-      console.error('Error sending message:', error);
+      this.handleSendError(error);
+    }
+  }
+
+  validateInput() {
+    const message = this.messageInput.value.trim();
+
+    if (!message) return false;
+    if (message.length > 1000) {
+      // Reasonable input length limit
       this.addMessage(
-        'Sorry, there was an error processing your message.',
+        'Message is too long. Please keep it under 1000 characters.',
         'bot',
       );
+      return false;
     }
+    if (this.isLoading) return false;
+
+    const now = Date.now();
+    if (now - this.lastApiCall < this.apiCooldown) {
+      this.addMessage(
+        'Please wait a moment before sending another message.',
+        'bot',
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  handleSendError(error) {
+    this.removeLoadingMessage();
+    console.error('Error sending message:', error);
+
+    let errorMessage = 'Sorry, there was an error processing your message.';
+    if (error.message.includes('401')) {
+      errorMessage = 'Authentication failed. Please refresh the page.';
+    } else if (error.message.includes('429')) {
+      errorMessage = 'Too many messages. Please wait a moment.';
+    }
+
+    this.addMessage(errorMessage, 'bot');
   }
 
   showLoadingMessage() {
@@ -392,16 +515,33 @@ class Chatbot {
     }
   }
 
-  addMessage(content, type) {
+  formatTime(date) {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+      timeZone: 'Asia/Dhaka', // GMT+6
+    }).format(new Date(date));
+  }
+
+  addMessage(content, type, timestamp = new Date()) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}-message`;
+
+    // Add timestamp at the top
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'message-timestamp';
+    timeDiv.textContent = this.formatTime(timestamp);
+    messageDiv.appendChild(timeDiv);
+
+    // Create message row for avatar and content
+    const messageRow = document.createElement('div');
+    messageRow.className = 'message-row';
 
     // Create avatar
     const avatar = document.createElement('div');
     avatar.className = `avatar ${type}-avatar`;
     avatar.innerHTML = type === 'bot' ? '🤖' : '👤';
-
-    // Set background color for bot avatar immediately
     if (type === 'bot') {
       avatar.style.backgroundColor = this.botColor;
     }
@@ -411,7 +551,6 @@ class Chatbot {
     messageContent.className = 'message-content';
 
     try {
-      // Render content with Markdown for bot messages
       if (type === 'bot') {
         const cleanContent = DOMPurify.sanitize(content);
         const renderedContent = MarkdownRenderer.render(cleanContent);
@@ -421,7 +560,6 @@ class Chatbot {
       }
     } catch (error) {
       console.error('Message rendering error:', error);
-      // Fallback to plain text if rendering fails
       messageContent.textContent =
         type === 'bot'
           ? "I'm sorry, I couldn't format that message properly. Please try again."
@@ -429,8 +567,9 @@ class Chatbot {
     }
 
     // Assemble message
-    messageDiv.appendChild(avatar);
-    messageDiv.appendChild(messageContent);
+    messageRow.appendChild(avatar);
+    messageRow.appendChild(messageContent);
+    messageDiv.appendChild(messageRow);
 
     this.chatMessages.appendChild(messageDiv);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
