@@ -127,9 +127,12 @@
         border: none;
       `;
 
-      // Use the server URL from config or default to localhost
+      // Add icon to URL params
       const serverUrl = config.serverUrl || 'http://localhost:4040';
-      iframe.src = `${serverUrl}/public/chatbot/index.html?botId=${botId}`;
+      const iconParam = finalConfig.icon
+        ? `&icon=${encodeURIComponent(finalConfig.icon)}`
+        : '';
+      iframe.src = `${serverUrl}/public/chatbot/index.html?botId=${botId}${iconParam}`;
 
       // Add close button for mobile
       const closeButton = document.createElement('div');
