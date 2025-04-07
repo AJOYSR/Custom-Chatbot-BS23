@@ -9,10 +9,10 @@
 
       // Configuration
       const defaultConfig = {
-        buttonColor: '#007bff',
+        buttonColor: '#578FCA',
         buttonIcon: '💬',
-        chatHeight: '500px',
-        chatWidth: '350px',
+        chatHeight: '550px',
+        chatWidth: '400px',
         position: 'right', // 'right' or 'left'
       };
 
@@ -27,8 +27,8 @@
         position: fixed;
         bottom: 20px;
         ${positionSide}: 20px;
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background-color: ${finalConfig.buttonColor};
         color: white;
