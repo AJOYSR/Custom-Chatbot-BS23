@@ -2,6 +2,10 @@
 
 A custom chatbot built with NestJS, MongoDB, PostgreSQL with pgvector extension for vector similarity search.
 
+##Demo
+![image](https://github.com/user-attachments/assets/782ad9d0-a063-4dbe-9d4d-990c67dbb5e7)
+
+
 ## Prerequisites
 
 - Node.js (>= v16)
