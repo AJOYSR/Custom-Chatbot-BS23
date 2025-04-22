@@ -5,7 +5,6 @@ import {
   IsEnum,
   IsBoolean,
   IsString,
-  IsArray,
   IsOptional,
   MinLength,
   Matches,
@@ -45,20 +44,8 @@ export class CreateUserDto {
     example: '+1234567890',
   })
   @IsString({ message: 'validation.isString' })
-  @IsPhoneNumber(null, { message: 'validation.isMobilePhone' })
+  @IsPhoneNumber('BD', { message: 'validation.isMobilePhone' })
   phone: string;
-
-  @ApiProperty({
-    description:
-      'User password (min 6 chars, must contain letters and numbers)',
-    example: 'Password123!',
-  })
-  @IsString({ message: 'validation.isString' })
-  @MinLength(6, { message: 'validation.minLength' })
-  @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-    message: 'validation.passwordComplexity',
-  })
-  password: string;
 
   @ApiProperty({
     description: 'User role',
@@ -68,6 +55,14 @@ export class CreateUserDto {
   @IsString({ message: 'validation.isString' })
   @IsNotEmpty({ message: 'isNotEmpty' })
   role: string;
+
+  @ApiProperty({
+    description: 'Bot ID, which is assigned to the user',
+    example: '60d21b4667d0d8992e610c85',
+  })
+  @IsString({ message: 'validation.isString' })
+  @IsNotEmpty({ message: 'validation.isNotEmpty' })
+  botId: string;
 }
 
 // update-user.dto.ts
@@ -110,20 +105,6 @@ export class UpdateUserDto {
   phone?: string;
 
   @ApiProperty({
-    description:
-      'User password (min 8 chars, must contain letters and numbers)',
-    example: 'NewPassword123!',
-    required: false,
-  })
-  @IsString({ message: 'validation.isString' })
-  @MinLength(8, { message: 'validation.minLength' })
-  @Matches(/^(?=.*[a-zA-Z])(?=.*\d)/, {
-    message: 'validation.passwordComplexity',
-  })
-  @IsOptional()
-  password?: string;
-
-  @ApiProperty({
     description: 'User role',
     enum: ROLE,
     example: ROLE.CUSTOMER,
@@ -132,19 +113,6 @@ export class UpdateUserDto {
   @IsEnum(ROLE, { message: 'validation.isEnum' })
   @IsOptional()
   role?: ROLE;
-
-  @ApiProperty({
-    description: 'User permissions',
-    type: [String],
-    enum: PERMISSIONS,
-    isArray: true,
-    example: [PERMISSIONS.VIEW_USER_PROFILE, PERMISSIONS.VIEW_BOT_LIST],
-    required: false,
-  })
-  @IsArray({ message: 'validation.isArray' })
-  @IsEnum(PERMISSIONS, { each: true, message: 'validation.isEnum' })
-  @IsOptional()
-  permissions?: PERMISSIONS[];
 
   @ApiProperty({
     description: 'User active status',

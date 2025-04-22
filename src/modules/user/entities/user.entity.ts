@@ -9,6 +9,7 @@ export interface UserInterface {
   firstName: string;
   lastName: string;
   permissions: PERMISSIONS[];
+  botList: any[];
   isActive: boolean;
   isEmailVerified: boolean;
   createdAt?: Date;

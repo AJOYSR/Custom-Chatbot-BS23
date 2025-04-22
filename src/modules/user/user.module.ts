@@ -12,6 +12,8 @@ import { UserRepository } from './user.repository';
 import { MailService } from 'src/helper/email';
 import { APIResponse } from 'src/internal/api-response/api-response.service';
 import { PaginationService } from '../pagination/pagination.service';
+import { BotRepository } from '../bot/bot.repository';
+import { UserBotsRepository } from '../user-bots/user-bots.repository';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { PaginationService } from '../pagination/pagination.service';
     MailService,
     APIResponse,
     PaginationService,
+    BotRepository,
+    UserBotsRepository,
   ],
   exports: [UserService, UserRepository],
 })
