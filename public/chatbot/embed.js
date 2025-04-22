@@ -9,10 +9,10 @@
 
       // Configuration
       const defaultConfig = {
-        buttonColor: '#007bff',
+        buttonColor: '#578FCA',
         buttonIcon: '💬',
-        chatHeight: '500px',
-        chatWidth: '350px',
+        chatHeight: '550px',
+        chatWidth: '400px',
         position: 'right', // 'right' or 'left'
       };
 
@@ -27,8 +27,8 @@
         position: fixed;
         bottom: 20px;
         ${positionSide}: 20px;
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background-color: ${finalConfig.buttonColor};
         color: white;
@@ -127,9 +127,12 @@
         border: none;
       `;
 
-      // Use the server URL from config or default to localhost
+      // Add icon to URL params
       const serverUrl = config.serverUrl || 'http://localhost:4040';
-      iframe.src = `${serverUrl}/public/chatbot/index.html?botId=${botId}`;
+      const iconParam = finalConfig.icon
+        ? `&icon=${encodeURIComponent(finalConfig.icon)}`
+        : '';
+      iframe.src = `${serverUrl}/public/chatbot/index.html?botId=${botId}${iconParam}`;
 
       // Add close button for mobile
       const closeButton = document.createElement('div');
@@ -158,11 +161,14 @@
         closeButton.style.display = 'none';
       });
 
-      // Listen for color updates from iframe
+      // Listen for messages from iframe
       window.addEventListener('message', (event) => {
         if (event.data.type === 'BOT_COLOR') {
           button.style.backgroundColor = event.data.color;
           container.style.borderColor = event.data.color;
+        } else if (event.data.type === 'CLOSE_CHAT') {
+          container.style.display = 'none';
+          closeButton.style.display = 'none';
         }
       });
     },

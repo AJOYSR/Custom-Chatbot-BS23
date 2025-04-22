@@ -33,6 +33,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative; 
         }
         #bot-avatar {
             width: 35px;
@@ -55,6 +56,7 @@
             padding: 20px;
             background: #f8f9fa;
         }
+    
         .message {
             margin: 10px 0;
             display: flex;
@@ -354,35 +356,155 @@
             color: #2563eb !important;
         }
 
-        /* Loading animation styles */
+        /* Updated Loading animation styles */
+        .loading-content {
+            min-height: 18px;
+            display: flex;
+            align-items: center;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
         .typing-indicator {
             display: flex;
-            gap: 4px;
-            padding: 4px 8px;
+            align-items: center;
+            gap: 5px;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+            height: 18px;
         }
 
         .typing-indicator span {
-            width: 8px;
-            height: 8px;
+            display: inline-block;
+            width: 7px;
+            height: 7px;
             background: #8cbbee;
             border-radius: 50%;
-            animation: bounce 1.5s infinite;
+            opacity: 0.4;
+            animation: bouncingDot 1.4s infinite;
         }
 
         .typing-indicator span:nth-child(2) {
             animation-delay: 0.2s;
+            opacity: 0.6;
         }
 
         .typing-indicator span:nth-child(3) {
             animation-delay: 0.4s;
+            opacity: 0.8;
         }
 
-        @keyframes bounce {
+        @keyframes bouncingDot {
             0%, 60%, 100% {
                 transform: translateY(0);
             }
             30% {
                 transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        /* Override for bot message loading state */
+        .bot-message .loading-content {
+            margin: 0;
+        }
+
+        .bot-message .typing-indicator {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Add close button styles */
+        #chat-close-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+
+        #chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Message timestamp styles */
+        .message-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 4px;
+            padding-left: 50px;
+        }
+        
+        .user-message .message-timestamp {
+            text-align: right;
+            padding-right: 50px;
+            padding-left: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .message-timestamp {
+                font-size: 10px;
+            }
+        }
+
+        /* Updated Message timestamp styles */
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 16px 0;
+        }
+
+        .message-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin: 0 0 2px 0;
+        }
+
+        .message-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .user-message .message-row {
+            flex-direction: row-reverse;
+        }
+
+        .user-message .message-timestamp {
+            color: rgba(0, 0, 0, 0.5);
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .message-wrapper {
+                max-width: 85%;
+            }
+            .message-timestamp {
+                font-size: 10px;
             }
         }
     </style>
@@ -391,9 +513,10 @@
     <div id="chat-container">
         <div id="chat-header">
             <div id="bot-avatar">
-                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712009.png" alt="Bot">
+                <span id="bot-icon">🤖</span>
             </div>
             <span id="bot-name">AI Assistant</span>
+            <button id="chat-close-btn">×</button>
         </div>
         <div id="chat-messages"></div>
         <div id="chat-input">
@@ -432,6 +555,13 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   }, true); // Use capture phase to intercept before other handlers
+});
+
+// Add close button handler
+document.getElementById('chat-close-btn').addEventListener('click', function() {
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'CLOSE_CHAT' }, '*');
+    }
 });
 </script>
 </body>
