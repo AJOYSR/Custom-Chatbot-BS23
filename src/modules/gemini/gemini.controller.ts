@@ -21,4 +21,11 @@ export class GeminiController {
     const ans = await this.geminiService.enhanceAnswer(question, answer);
     return ans;
   }
+  @Get('/similar')
+  async similarQuestions(
+    @Query('question') question: string,
+  ): Promise<{ questions: string[] }> {
+    const ans = await this.geminiService.generateSimilarQuestions(question);
+    return ans;
+  }
 }

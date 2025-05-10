@@ -51,6 +51,40 @@ export class QnAService {
         embedding,
       );
 
+      if (!createdQna) {
+        throw new Error(QnaErrorMessages.COULD_NOT_CREATE_QNA);
+      }
+      const { questions: similarQuestions = [] } =
+        (await this.geminiService.generateSimilarQuestions(question)) ?? {};
+      console.log(
+        '🚀 ~ QnAService ~ create ~ similarQuestions:',
+        similarQuestions,
+      );
+
+      if (similarQuestions?.length > 0) {
+        const insertPromises = similarQuestions?.map(
+          async (similarQuestion) => {
+            try {
+              const similarEmbedding =
+                await this.geminiService.generateEmbeddings(similarQuestion);
+              return this.qnaRepo.insertVector(
+                similarQuestion,
+                answer,
+                botId,
+                similarEmbedding,
+              );
+            } catch (error) {
+              console.error(
+                `Error processing similar question "${similarQuestion}":`,
+                error,
+              );
+            }
+          },
+        );
+
+        await Promise.all(insertPromises);
+      }
+
       return this.apiResponse.success(createdQna);
     } catch (error) {
       throw new HttpException(
@@ -64,7 +98,6 @@ export class QnAService {
 
   async findAll(condition: { q: string }, pagination: PaginationQueryDto) {
     const query = generateSearchQuery(condition);
-    console.log('🚀 ~ QnAService ~ findAll ~ query:', query);
 
     // Paginate the list of users based on the generated query, role IDs query, and pagination settings
     const { data, page, limit, total } = await this.paginationService.paginate(
